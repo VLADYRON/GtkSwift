@@ -15,24 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-    
 
 import CGtk
 
 public class Button: Bin{
-  private var button: UnsafeMutablePointer<GtkButton>? {
-    get {
-      return UnsafeMutablePointer<GtkButton>(OpaquePointer(widget))
-    }
-  }
-  
-  override public init() {
-    super.init()
-    widget = gtk_button_new()
-  }
-  
-  public init(label: String) {
-    super.init()
-    widget = gtk_button_new_with_label(label)
-  }
+	private var button: UnsafeMutablePointer<GtkButton>? {
+		get {
+			return UnsafeMutablePointer<GtkButton>(OpaquePointer(widget))
+		}
+	}
+	
+	override public init() {
+		super.init()
+		widget = gtk_button_new()
+	}
+	
+	public init(label: String) {
+		super.init()
+		widget = gtk_button_new_with_label(label)
+	}
 }
