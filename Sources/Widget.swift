@@ -20,18 +20,18 @@
 import CGtk
 
 public class Widget {
-    public var handle: UnsafeMutablePointer<GtkWidget>?
-    
-    
-    init() {
-        handle = nil
-    }
-    init(app: UnsafeMutablePointer<GtkApplication>) {
-        handle = gtk_application_window_new(app)  
-    }
-    
-    func showAll() {
-        gtk_widget_show_all(handle!)
-    }
+  public var widget: UnsafeMutablePointer<GtkWidget>?
+  
+  
+  init() {
+    widget = nil
+  }
+  init(application: Application) {
+    widget = gtk_application_window_new(application.application)  
+  }
+  
+  func showAll() {
+    gtk_widget_show_all(widget!)
+  }
 
 }

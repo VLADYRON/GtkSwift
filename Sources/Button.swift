@@ -19,20 +19,20 @@
 
 import CGtk
 
-public class Window: Widget {
-    internal var windowHandle: UnsafeMutablePointer<GtkWindow>? {
-        get {
-            return UnsafeMutablePointer<GtkWindow>(OpaquePointer(handle))
-        }
+public class Button: Bin{
+  private var button: UnsafeMutablePointer<GtkButton>? {
+    get {
+      return UnsafeMutablePointer<GtkButton>(OpaquePointer(widget))
     }
-    
-    
-    var title: String? {
-        get {
-            return String(cString: gtk_window_get_title(windowHandle))
-        }
-        set {
-            gtk_window_set_title(windowHandle, newValue)
-        }
-    }
+  }
+  
+  override public init() {
+    super.init()
+    widget = gtk_button_new()
+  }
+  
+  public init(label: String) {
+    super.init()
+    widget = gtk_button_new_with_label(label)
+  }
 }

@@ -19,29 +19,25 @@
 
 import CGtk
 
-public class ApplicationWindow: Window {    
-  internal var applicationWindow: UnsafeMutablePointer<GtkApplicationWindow>? {
+public enum Orientation {
+  case Horizontal
+  case Vertical
+}
+
+public class ButtonBox: Box {
+  private var buttonBox: UnsafeMutablePointer<GtkButtonBox>? {
     get {
-      return UnsafeMutablePointer<GtkApplicationWindow>(OpaquePointer(widget))
+      return UnsafeMutablePointer<GtkButtonBox>(OpaquePointer(widget))
     }
-  }
+  }  
   
-  override public init(application: Application) {
-    super.init(application: application)
-  }
-
-  var showMenubar: Bool {
-    get {
-      return gtk_application_window_get_show_menubar(applicationWindow) != 0
-    }
-    set {
-      gtk_application_window_set_show_menubar(applicationWindow, newValue ? 1 : 0)
+  public init(orientation: Orientation = .Horizontal) {
+    super.init()
+    switch orientation {
+      case .Horizontal: 
+        widget = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL)
+      case .Vertical:
+        widget = gtk_button_box_new(GTK_ORIENTATION_VERTICAL)
     }
   }
-
-  var id: UInt32 {
-    get {
-      return gtk_application_window_get_id(applicationWindow)
-    }
-  }
-  }
+}

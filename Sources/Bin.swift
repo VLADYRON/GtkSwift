@@ -19,29 +19,10 @@
 
 import CGtk
 
-public class ApplicationWindow: Window {    
-  internal var applicationWindow: UnsafeMutablePointer<GtkApplicationWindow>? {
+public class Bin: Container {
+  private var bin: UnsafeMutablePointer<GtkBin>? {
     get {
-      return UnsafeMutablePointer<GtkApplicationWindow>(OpaquePointer(widget))
+      return UnsafeMutablePointer<GtkBin>(OpaquePointer(widget))
     }
   }
-  
-  override public init(application: Application) {
-    super.init(application: application)
-  }
-
-  var showMenubar: Bool {
-    get {
-      return gtk_application_window_get_show_menubar(applicationWindow) != 0
-    }
-    set {
-      gtk_application_window_set_show_menubar(applicationWindow, newValue ? 1 : 0)
-    }
-  }
-
-  var id: UInt32 {
-    get {
-      return gtk_application_window_get_id(applicationWindow)
-    }
-  }
-  }
+}
