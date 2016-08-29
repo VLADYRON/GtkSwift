@@ -15,12 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+    
 
-import PackageDescription
+import CGtk
 
-let package = Package(
-    name: "GtkSwift",
-    dependencies: [
-        .Package(url: "https://github.com/SWIFTingAround/CGtk.git", majorVersion: 0, minor: 1)
-    ]
-)
+public class Window: Widget {
+    internal var windowHandle: UnsafeMutablePointer<GtkWindow>? {
+        get {
+            return UnsafeMutablePointer<GtkWindow>(OpaquePointer(handle))
+        }
+    }
+    
+    
+    var title: String? {
+        get {
+            return String(cString: gtk_window_get_title(windowHandle))
+        }
+        set {
+            gtk_window_set_title(windowHandle, newValue)
+        }
+    }
+}

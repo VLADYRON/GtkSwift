@@ -23,30 +23,71 @@ let print_hello: @convention(c) (UnsafeMutablePointer<GtkWidget>, UnsafeMutableR
   print("Hello World!")
 }
 
+var widget: ApplicationWindow
+
+typealias SignalCallbackOne = (UnsafeMutableRawPointer) -> Void
+class Wrap {
+    let callback: SignalCallbackOne
+    
+    init(callback: SignalCallbackOne) {
+        self.callback = callback
+    }
+}
+
 let handler: @convention(c) (UnsafeMutablePointer<GtkApplication>, UnsafeMutableRawPointer) -> Void = { app, user_data in
   let window: UnsafeMutablePointer<GtkWidget>
   let button: UnsafeMutablePointer<GtkWidget>
   let button_box: UnsafeMutablePointer<GtkWidget>
   
-  window = gtk_application_window_new(app)  
-  window.withMemoryRebound(to: GtkWindow.self, capacity: 1) {
-    gtk_window_set_title($0, "Window")
-    gtk_window_set_default_size($0, 200, 200)
-  }  
+  widget = ApplicationWindow(application: app)
+  print(widget.id)
+  widget.title = "Hello World!"
+  print(widget.title)
+//   window.withMemoryRebound(to: GtkWindow.self, capacity: 1) {
+//     gtk_window_set_title($0, "Window")
+//     gtk_window_set_default_size($0, 200, 200)
+//   }  
   
-  button_box = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL)
-  window.withMemoryRebound(to: GtkContainer.self, capacity: 1) {
-    gtk_container_add ($0, button_box);
-  }
+//   button_box = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL)
+//   window.withMemoryRebound(to: GtkContainer.self, capacity: 1) {
+//     gtk_container_add ($0, button_box);
+//   }
   
-  button = gtk_button_new_with_label ("Hello World")
-  g_signal_connect_data(button, "clicked", unsafeBitCast(print_hello, to: GCallback.self), nil, nil, G_CONNECT_AFTER)
-  //g_signal_connect_data(button, "clicked", unsafeBitCast(gtk_widget_destroy, to: GCallback.self), nil, nil, G_CONNECT_SWAPPED);
-  button_box.withMemoryRebound(to: GtkContainer.self, capacity: 1) {
-    gtk_container_add ($0, button);
-  }
+//   button = gtk_button_new_with_label ("Hello World")
+//   g_signal_connect_data(button, "clicked", unsafeBitCast(print_hello, to: GCallback.self), nil, nil, G_CONNECT_AFTER)
   
-  gtk_widget_show_all(window)
+//   let wrapper: @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void = { sender, data in
+//     print(sender)
+//     print(p1)
+//     print(data)
+//   }
+//   typealias my_cb_t = (UnsafeMutableRawPointer) -> Void
+//   let i = Wrap()
+//   print(window)
+//   print(button)
+//   print(Unmanaged.passUnretained(i).toOpaque())
+//   let ptr = UnsafeMutableRawPointer(Unmanaged.passUnretained(i).toOpaque())
+//   g_signal_connect_data(button, "clicked", unsafeBitCast(wrapper, to: GCallback.self), UnsafeMutableRawPointer(ptr), nil, G_CONNECT_SWAPPED)
+  
+// #define g_signal_connect(instance, detailed_signal, c_handler, data) \
+//     g_signal_connect_data ((instance), (detailed_signal), (c_handler), (data), NULL, (GConnectFlags) 0)
+  
+//   unsafeBitCast(box, to: Wrap.self)
+
+//   typealias Wrapper = @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void
+//   let wrapper = unsafeBitCast(gtk_widget_destroy, to: Wrapper.self)
+//   typealias CFunction = @convention(c) (UnsafeMutablePointer<Void>, Float) -> Int
+//     let bar = unsafeBitCast(foo, CFunction.self)
+//   g_signal_connect_data(button, "clicked", unsafeBitCast(gtk_widget_destroy, to: GCallback.self), nil, nil, G_CONNECT_SWAPPED);
+  
+  
+  
+//   button_box.withMemoryRebound(to: GtkContainer.self, capacity: 1) {
+//     gtk_container_add ($0, button);
+//   }
+//   gtk_widget_show_all(window)
+//   widget.handle = window
+    widget.showAll()
 }
 
 
