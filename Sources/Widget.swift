@@ -1,4 +1,4 @@
-/* 
+/*
  * CGtk Copyright (C) 2016 Tim Diekmann
  * mailto: t.diekmann.3dv@gmail.com
  *
@@ -18,17 +18,42 @@
 
 import CGtk
 
+typealias Callback = () -> Void
+class SignalData {
+	var callback: Callback
+	init(callback: @escaping Callback) {
+		self.callback = callback
+	}
+}
+
 public class Widget {
 	public var widget: UnsafeMutablePointer<GtkWidget>?
-	
+	private var signals: [String: (UInt, Any)] = [:]
+
 	init() {
 		widget = nil
 	}
 	init(application: Application) {
 		widget = gtk_application_window_new(application.application)
 	}
-	
+	internal init(_ ptr: UnsafeMutablePointer<GtkWidget>) {
+		widget = ptr
+	}
+
 	func showAll() {
 		gtk_widget_show_all(widget!)
+	}
+
+	public typealias ButtonClickedNative = @convention(c)(UnsafeMutablePointer<GtkButton>, gpointer) -> Void
+
+	func addSignal(name: String, callback: @escaping Callback) {
+		let handle: @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void = {
+			let signalData = unsafeBitCast($1, to: SignalData.self)
+			signalData.callback()
+		}
+
+		let data = SignalData(callback: callback)
+		let id = g_signal_connect_data(widget, name, unsafeBitCast(handle, to: GCallback.self), Unmanaged.passUnretained(data).toOpaque(), nil, G_CONNECT_AFTER)
+		signals[name] = (id, data)
 	}
 }

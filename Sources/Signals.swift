@@ -18,20 +18,16 @@
 
 import CGtk
 
-Application(id: "com.example.application").run {
-	let widget = ApplicationWindow(application: $0)
-	widget.title = "Hello World!"
-	widget.defaultSize = (width: 200, height: 200)
+public enum ConnectFlag {
+	case After
+	case Swapped
 
-	let buttonBox = ButtonBox()
-	widget.add(widget: buttonBox)
-
-	let button = Button(label: "Hello World!")
-	buttonBox.add(widget: button)
-
-	button.clicked = { button in
-		print(button)
-		print("hello world!")
+	func value() -> GConnectFlags {
+		switch self {
+			case .After:
+				return G_CONNECT_AFTER
+			case .Swapped:
+				return G_CONNECT_SWAPPED
+		}
 	}
-	widget.showAll()
 }

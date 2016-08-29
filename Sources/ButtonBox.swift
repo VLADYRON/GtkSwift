@@ -1,4 +1,4 @@
-/* 
+/*
  * CGtk Copyright (C) 2016 Tim Diekmann
  * mailto: t.diekmann.3dv@gmail.com
  *
@@ -29,11 +29,11 @@ public class ButtonBox: Box {
 			return UnsafeMutablePointer<GtkButtonBox>(OpaquePointer(widget))
 		}
 	}
-	
+
 	public init(orientation: Orientation = .Horizontal) {
 		super.init()
 		switch orientation {
-			case .Horizontal: 
+			case .Horizontal:
 				widget = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL)
 			case .Vertical:
 				widget = gtk_button_box_new(GTK_ORIENTATION_VERTICAL)

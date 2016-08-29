@@ -1,4 +1,4 @@
-/* 
+/*
  * CGtk Copyright (C) 2016 Tim Diekmann
  * mailto: t.diekmann.3dv@gmail.com
  *
@@ -23,5 +23,9 @@ public class Bin: Container {
 		get {
 			return UnsafeMutablePointer<GtkBin>(OpaquePointer(widget))
 		}
+	}
+
+	public func getChild() -> Widget {
+		return Widget(gtk_bin_get_child(bin))
 	}
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * CGtk Copyright (C) 2016 Tim Diekmann
  * mailto: t.diekmann.3dv@gmail.com
  *
@@ -24,14 +24,29 @@ public class Button: Bin{
 			return UnsafeMutablePointer<GtkButton>(OpaquePointer(widget))
 		}
 	}
-	
+	deinit {
+		// TODO: delete
+		print("deinit")
+	}
+
+	private typealias ClickedCallback = (Button) -> Void
+
+
 	override public init() {
+		print("init")
 		super.init()
 		widget = gtk_button_new()
+		// FIXME: add [unowned self], results in Segmentation fault
+		addSignal(name: "clicked"){self.clicked?(self)}
 	}
-	
+
 	public init(label: String) {
+		print("init")
 		super.init()
 		widget = gtk_button_new_with_label(label)
+		// FIXME: add [unowned self], results in Segmentation fault
+		addSignal(name: "clicked"){self.clicked?(self)}
 	}
+
+	public var clicked: ((Button) -> Void)? = nil
 }

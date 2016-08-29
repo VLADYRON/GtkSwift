@@ -18,7 +18,7 @@
 
 import CGtk
 
-public enum ApplicationFlags {
+public enum ApplicationFlag {
 	case None
 }
 
@@ -39,7 +39,7 @@ public class Application {
 		}
 	}
 	
-	public init(id: String, flags: ApplicationFlags = .None) {
+	public init(id: String, flags: ApplicationFlag = .None) {
 		switch flags {
 			case .None:
 				application = gtk_application_new(id, G_APPLICATION_FLAGS_NONE)

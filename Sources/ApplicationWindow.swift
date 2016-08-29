@@ -1,4 +1,4 @@
-/* 
+/*
  * CGtk Copyright (C) 2016 Tim Diekmann
  * mailto: t.diekmann.3dv@gmail.com
  *
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
 import CGtk
 
 public class ApplicationWindow: Window {
@@ -24,11 +24,11 @@ public class ApplicationWindow: Window {
 			return UnsafeMutablePointer<GtkApplicationWindow>(OpaquePointer(widget))
 		}
 	}
-	
+
 	override public init(application: Application) {
 		super.init(application: application)
 	}
-	
+
 	var showMenubar: Bool {
 		get {
 			return gtk_application_window_get_show_menubar(applicationWindow) != 0
@@ -37,11 +37,10 @@ public class ApplicationWindow: Window {
 			gtk_application_window_set_show_menubar(applicationWindow, newValue ? 1 : 0)
 		}
 	}
-	
+
 	var id: UInt32 {
 		get {
 			return gtk_application_window_get_id(applicationWindow)
 		}
 	}
 }
-	
