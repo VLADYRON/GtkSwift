@@ -21,7 +21,7 @@ import CGtk
 public class Box: Container {
 	internal var box: UnsafeMutablePointer<GtkBox>? {
 		get {
-			return UnsafeMutablePointer<GtkBox>(OpaquePointer(ptr))
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkBox>.self)
 		}
 	}
 }

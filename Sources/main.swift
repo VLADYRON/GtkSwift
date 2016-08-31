@@ -30,21 +30,17 @@ Application(id: "com.example.application")?.run {
 	guard let button = Button(label: "Hello World!") else { exit(3) }
 	buttonBox.add(widget: button)
 
-	button.clicked = { button in
-		print(button)
-		print("hello world!")
-	}
-	print(widget.defaultSize)
+
 	widget.showAll()
 	var adj = widget.focusVAdjustment
-	let a = Adjustment(value: 2, lower: 3, upper: 10, stepIncrement: 1, pageIncrement: 2, pageSize: 1)
-	adj = a
-	a.changed = { (adjustment: Adjustment) in
-		print(adjustment)
+	guard let a = Adjustment(value: 2, lower: 3, upper: 10, stepIncrement: 1, pageIncrement: 2, pageSize: 1) else {exit(4)}
+	widget.focusVAdjustment = a
+	widget.focusVAdjustment?.valueChanged = { [unowned a] in
+		print("Value changed: \( a.value)")
 	}
-	// widget.added = {
-	// 	print($0, $1)
-	// }
 
-	// widget.focusChild = nil
+	button.clicked = { button in
+		a.value += 0.1
+	}
+	widget.focusChild = nil
 }

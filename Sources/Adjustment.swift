@@ -18,23 +18,23 @@
 
 import CGtk
 
-public class Adjustment: Signalable {
-	internal var adjustment: UnsafeMutablePointer<GtkAdjustment>
-	internal var ptr: UnsafeMutableRawPointer {
+public class Adjustment: Object {
+	internal var adjustment: UnsafeMutablePointer<GtkAdjustment> {
 		get {
-			return UnsafeMutableRawPointer(OpaquePointer(adjustment))
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkAdjustment>.self)
 		}
 	}
-
 	deinit {
-		print("deinit \(self)")
+		print(self)
 	}
+	public convenience init?(value: Double, lower: Double, upper: Double, stepIncrement: Double, pageIncrement: Double, pageSize: Double) {
+		self.init(object: gtk_adjustment_new(value, lower, upper, stepIncrement, pageIncrement, pageSize))
+	}
+	internal override init?(object: UnsafeMutableRawPointer?) {
+		super.init(object: object)
 
-	public convenience init(value: Double, lower: Double, upper: Double, stepIncrement: Double, pageIncrement: Double, pageSize: Double) {
-		self.init(adjustment: gtk_adjustment_new(value, lower, upper, stepIncrement, pageIncrement, pageSize))
-	}
-	public init(adjustment: UnsafeMutablePointer<GtkAdjustment>) {
-		self.adjustment = adjustment
+		setSignal(name: "value-changed") { [unowned self] in self.valueChanged?(self) }
+		setSignal(name: "changed") { [unowned self] in self.changed?(self) }
 	}
 
 	public var value: Double {
@@ -98,26 +98,6 @@ public class Adjustment: Signalable {
 		gtk_adjustment_configure(adjustment, value, lower, upper, stepIncrement, pageIncrement, pageSize)
 	}
 
-	private var valueChangedId: gulong?
-	public var valueChanged: ((Adjustment) -> Void)? {
-		didSet {
-			if valueChanged != nil {
-				valueChangedId = addSignal(name: "value-changed") { [unowned self] in self.valueChanged?(self) }
-			} else {
-				removeSignal(id: valueChangedId!)
-				valueChangedId = nil
-			}
-		}
-	}
-	private var changedId: gulong?
-	public var changed: ((Adjustment) -> Void)? {
-		didSet {
-			if changed != nil {
-				changedId = addSignal(name: "changed") { [unowned self] in self.changed?(self) }
-			} else {
-				removeSignal(id: changedId!)
-				changedId = nil
-			}
-		}
-	}
+	public var valueChanged: ((Adjustment) -> Void)?
+	public var changed: ((Adjustment) -> Void)?
 }

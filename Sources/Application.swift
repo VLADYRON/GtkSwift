@@ -18,28 +18,24 @@
 
 import CGtk
 
-public class Application: Signalable {
-	internal var application: UnsafeMutablePointer<GtkApplication>
- 	internal var gApplication: UnsafeMutablePointer<GApplication> {
+public class Application: Object {
+	internal var application: UnsafeMutablePointer<GtkApplication> {
 		get {
-			return UnsafeMutablePointer<GApplication>(OpaquePointer(application))
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkApplication>.self)
 		}
 	}
-	internal var ptr: UnsafeMutableRawPointer {
+ 	internal var gApplication: UnsafeMutablePointer<GApplication> {
 		get {
-			return UnsafeMutableRawPointer(OpaquePointer(application))
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GApplication>.self)
 		}
 	}
 
-	public init?(id: String, flags: ApplicationFlags = .None) {
-		guard let application = gtk_application_new(id, flags.value()) else {
-			return  nil
-		}
-		self.application = application
+	public convenience init?(id: String, flags: ApplicationFlags = .None) {
+		self.init(object: gtk_application_new(id, flags.value()))
 	}
 
 	public func run(_ activate: @escaping (Application) -> Void) {
-		addSignal(name: "activate") { [unowned self] in activate(self) }
+		setSignal(name: "activate") { [unowned self] in activate(self)}
 		g_application_run(gApplication, CommandLine.argc, CommandLine.unsafeArgv)
 		g_object_unref(application)
 	}

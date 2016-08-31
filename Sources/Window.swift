@@ -21,7 +21,7 @@ import CGtk
 public class Window: Bin {
 	internal var window: UnsafeMutablePointer<GtkWindow>? {
 		get {
-			return UnsafeMutablePointer<GtkWindow>(OpaquePointer(ptr))
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkWindow>.self)
 		}
 	}
 

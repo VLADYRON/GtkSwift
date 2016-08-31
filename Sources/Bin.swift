@@ -19,9 +19,9 @@
 import CGtk
 
 public class Bin: Container {
-	internal var bin: UnsafeMutablePointer<GtkBin>? {
+	internal var bin: UnsafeMutablePointer<GtkBin> {
 		get {
-			return UnsafeMutablePointer<GtkBin>(OpaquePointer(ptr))
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkBin>.self)
 		}
 	}
 	public var child: Widget? {
@@ -29,7 +29,7 @@ public class Bin: Container {
 			guard let child = gtk_bin_get_child(bin) else {
 				return nil
 			}
-			return Widget.storage[child]
+			return Object.get(object: child) as? Widget
 		}
 	}
 }

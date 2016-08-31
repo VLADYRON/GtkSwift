@@ -19,16 +19,14 @@
 import CGtk
 
 public class ApplicationWindow: Window {
-	internal var applicationWindow: UnsafeMutablePointer<GtkApplicationWindow>? {
+	internal var applicationWindow: UnsafeMutablePointer<GtkApplicationWindow> {
 		get {
-			return UnsafeMutablePointer<GtkApplicationWindow>(OpaquePointer(ptr))
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkApplicationWindow>.self)
 		}
 	}
+
 	public convenience init?(application: Application) {
-		guard let applicationWindow = gtk_application_window_new(application.application) else {
-			return nil
-		}
-		self.init(ptr: applicationWindow)
+		self.init(object: gtk_application_window_new(application.application))
 	}
 
 	public var showMenubar: Bool {

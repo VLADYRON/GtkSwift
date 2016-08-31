@@ -21,13 +21,10 @@ import CGtk
 public class ButtonBox: Box {
 	internal var buttonBox: UnsafeMutablePointer<GtkButtonBox>? {
 		get {
-			return UnsafeMutablePointer<GtkButtonBox>(OpaquePointer(ptr))
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkButtonBox>.self)
 		}
 	}
 	public convenience init?(orientation: Orientation = .Horizontal) {
-		guard let buttonBox = gtk_button_box_new(orientation.value()) else {
-			return nil
-		}
-		self.init(ptr: buttonBox)
+		self.init(object: gtk_button_box_new(orientation.value()))
 	}
 }

@@ -19,21 +19,10 @@
 import CGtk
 
 
-public class Widget: Signalable {
-	internal var widget: UnsafeMutablePointer<GtkWidget>
-
-	internal var ptr: UnsafeMutableRawPointer {
+public class Widget: Object {
+	internal var widget: UnsafeMutablePointer<GtkWidget> {
 		get {
-			return UnsafeMutableRawPointer(OpaquePointer(widget))
-		}
-	}
-	internal static var storage: [UnsafeMutablePointer<GtkWidget>: Widget] = [:]
-	internal init(ptr: UnsafeMutableRawPointer) {
-		widget = UnsafeMutablePointer<GtkWidget>(OpaquePointer(ptr))
-		Widget.storage[widget] = self
-		addSignal(name: "destroy") {[unowned self] in
-			self.destroy?(self)
-			Widget.storage.removeValue(forKey: self.widget)
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkWidget>.self)
 		}
 	}
 

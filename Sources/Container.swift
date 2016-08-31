@@ -21,8 +21,16 @@ import CGtk
 public class Container: Widget{
 	internal var container: UnsafeMutablePointer<GtkContainer>? {
 		get {
-			return UnsafeMutablePointer<GtkContainer>(OpaquePointer(ptr))
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkContainer>.self)
 		}
+	}
+	internal override init?(object: UnsafeMutableRawPointer?) {
+		super.init(object: object)
+
+		setSignal(name: "add") {[unowned self] widget in self.added?(self, Object.get(object: widget) as! Widget)}
+		setSignal(name: "remove") {[unowned self] widget in self.removed?(self, Object.get(object: widget) as! Widget)}
+		setSignal(name: "set-focus-child") {[unowned self] widget in self.focusedChild?(self, Object.get(object: widget) as? Widget)}
+		setSignal(name: "check-resize") {[unowned self] in self.checkedResize?(self)}
 	}
 
 	public func add(widget: Widget) {
@@ -37,10 +45,7 @@ public class Container: Widget{
 
 	public var focusVAdjustment: Adjustment? {
 		get {
-			guard let ptr = gtk_container_get_focus_vadjustment(container) else {
-				return nil
-			}
-			return Adjustment(adjustment: ptr)
+			return Adjustment(object: gtk_container_get_focus_vadjustment(container))
 		}
 		set {
 			gtk_container_set_focus_vadjustment(container, newValue?.adjustment)
@@ -48,72 +53,16 @@ public class Container: Widget{
 	}
 	public var focusChild: Widget? {
 		get {
-			guard let containerP = gtk_container_get_focus_child(container) else {
-				return nil
-			}
-			return Widget.storage[UnsafeMutablePointer<GtkWidget>(OpaquePointer(containerP))]
+			let containerP = gtk_container_get_focus_child(container) 
+			return Object.get(object: containerP) as? Widget
 		}
 		set {
 			gtk_container_set_focus_child(container, newValue?.widget)
 		}
 	}
 
-	private var addedId: gulong?
-	public var added: ((Container, Widget) -> Void)? {
-		didSet {
-			if added != nil {
-				addedId = addSignal(name: "add") { [unowned self] (widget: UnsafeMutableRawPointer) in
-					let widget = Widget.storage[UnsafeMutablePointer<GtkWidget>(OpaquePointer(widget))]
-					assert(widget != nil, "Widget must not be null, Contact library creator please!")
-					self.added?(self,widget!)
-				}
-			} else {
-				removeSignal(id: addedId!)
-				addedId = nil
-			}
-		}
-	}
-	private var checkedResizeId: gulong?
-	public var checkedResize: ((Container) -> Void)? {
-		didSet {
-			if checkedResize != nil {
-				checkedResizeId = addSignal(name: "check-resize") { [unowned self] in self.checkedResize?(self) }
-			} else {
-				removeSignal(id: checkedResizeId!)
-				checkedResizeId = nil
-			}
-		}
-	}
-	private var removedId: gulong?
-	public var removed: ((Container, Widget) -> Void)? {
-		didSet {
-			if removed != nil {
-				removedId = addSignal(name: "remove") { [unowned self] (widget: UnsafeMutableRawPointer) in
-					let widget = Widget.storage[UnsafeMutablePointer<GtkWidget>(OpaquePointer(widget))]
-					assert(widget != nil, "Widget must not be null, Contact library creator please!")
-					self.removed?(self,widget!)
-				}
-			} else {
-				removeSignal(id: removedId!)
-				removedId = nil
-			}
-		}
-	}
-	private var focusedChildId: gulong?
-	public var focusedChild: ((Container, Widget?) -> Void)? {
-		didSet {
-			if focusedChild != nil {
-				focusedChildId = addSignal(name: "set-focus-child") { [unowned self] (widget: UnsafeMutableRawPointer?) in
-					guard let widget = widget else {
-						self.focusedChild?(self,nil)
-						return
-					}
-					self.focusedChild?(self,Widget.storage[UnsafeMutablePointer<GtkWidget>(OpaquePointer(widget))])
-				}
-			} else {
-				removeSignal(id: focusedChildId!)
-				focusedChildId = nil
-			}
-		}
-	}
+	public var added: ((Container, Widget) -> Void)?
+	public var removed: ((Container, Widget) -> Void)?
+	public var checkedResize: ((Container) -> Void)?
+	public var focusedChild: ((Container, Widget?) -> Void)?
 }

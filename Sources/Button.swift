@@ -18,28 +18,17 @@
 
 import CGtk
 
-public class Button: Bin{
+public class Button: Bin {
 	internal var button: UnsafeMutablePointer<GtkButton>? {
 		get {
-			return UnsafeMutablePointer<GtkButton>(OpaquePointer(ptr))
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkButton>.self)
 		}
 	}
 	public convenience init?(label: String) {
-		guard let button = gtk_button_new_with_label(label) else {
-			return nil
-		}
-		self.init(ptr: button)
+		self.init(object: gtk_button_new_with_label(label))
+
+		setSignal(name: "clicked") {[unowned self] in self.clicked?(self)}
 	}
 
-	private var clickedId: gulong?
-	public var clicked: ((Button) -> Void)? {
-		didSet {
-			if clicked != nil {
-				clickedId = addSignal(name: "clicked") { [unowned self] in self.clicked?(self) }
-			} else if clickedId != nil {
-				removeSignal(id: clickedId!)
-				clickedId = nil
-			}
-		}
-	}
+	public var clicked: ((Button) -> Void)?
 }
