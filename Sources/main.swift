@@ -32,15 +32,15 @@ Application(id: "com.example.application")?.run {
 
 
 	widget.showAll()
-	var adj = widget.focusVAdjustment
-	guard let a = Adjustment(value: 2, lower: 3, upper: 10, stepIncrement: 1, pageIncrement: 2, pageSize: 1) else {exit(4)}
-	widget.focusVAdjustment = a
-	widget.focusVAdjustment?.valueChanged = { [unowned a] in
-		print("Value changed: \( a.value)")
-	}
+	// var adj = widget.focusVAdjustment
+	// guard let a = Adjustment(value: 2, lower: 3, upper: 10, stepIncrement: 1, pageIncrement: 2, pageSize: 1) else {exit(4)}
+	// widget.focusVAdjustment = a
+	// widget.focusVAdjustment?.valueChanged = { [unowned a] in
+	// 	print("Value changed: \( a.value)")
+	// }
 
 	button.clicked = { button in
 		a.value += 0.1
 	}
-	widget.focusChild = nil
+	// widget.focusChild = nil
 }
