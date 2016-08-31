@@ -18,25 +18,16 @@
 
 import CGtk
 
-public enum Orientation {
-	case Horizontal
-	case Vertical
-}
-
 public class ButtonBox: Box {
-	private var buttonBox: UnsafeMutablePointer<GtkButtonBox>? {
+	internal var buttonBox: UnsafeMutablePointer<GtkButtonBox>? {
 		get {
-			return UnsafeMutablePointer<GtkButtonBox>(OpaquePointer(widget))
+			return UnsafeMutablePointer<GtkButtonBox>(OpaquePointer(ptr))
 		}
 	}
-
-	public init(orientation: Orientation = .Horizontal) {
-		super.init()
-		switch orientation {
-			case .Horizontal:
-				widget = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL)
-			case .Vertical:
-				widget = gtk_button_box_new(GTK_ORIENTATION_VERTICAL)
+	public convenience init?(orientation: Orientation = .Horizontal) {
+		guard let buttonBox = gtk_button_box_new(orientation.value()) else {
+			return nil
 		}
+		self.init(ptr: buttonBox)
 	}
 }

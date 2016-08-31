@@ -1,4 +1,4 @@
-/* 
+/*
  * CGtk Copyright (C) 2016 Tim Diekmann
  * mailto: t.diekmann.3dv@gmail.com
  *
@@ -18,43 +18,28 @@
 
 import CGtk
 
-public enum ApplicationFlag {
-	case None
-}
-
-
-let handler: @convention(c) (UnsafeMutableRawPointer, OpaquePointer) -> Void = { a, data in
-	print("blablabla")
-	print(a)
-	let app = UnsafeMutablePointer<Application>(data)
-}
-
-public class Application {
+public class Application: Signalable {
 	internal var application: UnsafeMutablePointer<GtkApplication>
-	private var activate: ((Application) -> Void)? = nil
-	
-	private var gApplication: UnsafeMutablePointer<GApplication> {
+ 	internal var gApplication: UnsafeMutablePointer<GApplication> {
 		get {
 			return UnsafeMutablePointer<GApplication>(OpaquePointer(application))
 		}
 	}
-	
-	public init(id: String, flags: ApplicationFlag = .None) {
-		switch flags {
-			case .None:
-				application = gtk_application_new(id, G_APPLICATION_FLAGS_NONE)
+	internal var ptr: UnsafeMutableRawPointer {
+		get {
+			return UnsafeMutableRawPointer(OpaquePointer(application))
 		}
 	}
-	
-	public func run(_ app: @escaping (Application) -> Void) {
-		activate = app
-		
-		let handler: @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void = {_, app in 
-			let app = unsafeBitCast(app, to: Application.self)
-			app.activate!(app)
+
+	public init?(id: String, flags: ApplicationFlags = .None) {
+		guard let application = gtk_application_new(id, flags.value()) else {
+			return  nil
 		}
-		
-		g_signal_connect_data(application, "activate", unsafeBitCast(handler, to: GCallback.self), Unmanaged.passUnretained(self).toOpaque(), nil, G_CONNECT_AFTER)
+		self.application = application
+	}
+
+	public func run(_ activate: @escaping (Application) -> Void) {
+		addSignal(name: "activate") { [unowned self] in activate(self) }
 		g_application_run(gApplication, CommandLine.argc, CommandLine.unsafeArgv)
 		g_object_unref(application)
 	}

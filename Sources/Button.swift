@@ -19,34 +19,27 @@
 import CGtk
 
 public class Button: Bin{
-	private var button: UnsafeMutablePointer<GtkButton>? {
+	internal var button: UnsafeMutablePointer<GtkButton>? {
 		get {
-			return UnsafeMutablePointer<GtkButton>(OpaquePointer(widget))
+			return UnsafeMutablePointer<GtkButton>(OpaquePointer(ptr))
 		}
 	}
-	deinit {
-		// TODO: delete
-		print("deinit")
+	public convenience init?(label: String) {
+		guard let button = gtk_button_new_with_label(label) else {
+			return nil
+		}
+		self.init(ptr: button)
 	}
 
-	private typealias ClickedCallback = (Button) -> Void
-
-
-	override public init() {
-		print("init")
-		super.init()
-		widget = gtk_button_new()
-		// FIXME: add [unowned self], results in Segmentation fault
-		addSignal(name: "clicked"){self.clicked?(self)}
+	private var clickedId: gulong?
+	public var clicked: ((Button) -> Void)? {
+		didSet {
+			if clicked != nil {
+				clickedId = addSignal(name: "clicked") { [unowned self] in self.clicked?(self) }
+			} else if clickedId != nil {
+				removeSignal(id: clickedId!)
+				clickedId = nil
+			}
+		}
 	}
-
-	public init(label: String) {
-		print("init")
-		super.init()
-		widget = gtk_button_new_with_label(label)
-		// FIXME: add [unowned self], results in Segmentation fault
-		addSignal(name: "clicked"){self.clicked?(self)}
-	}
-
-	public var clicked: ((Button) -> Void)? = nil
 }

@@ -19,13 +19,17 @@
 import CGtk
 
 public class Bin: Container {
-	private var bin: UnsafeMutablePointer<GtkBin>? {
+	internal var bin: UnsafeMutablePointer<GtkBin>? {
 		get {
-			return UnsafeMutablePointer<GtkBin>(OpaquePointer(widget))
+			return UnsafeMutablePointer<GtkBin>(OpaquePointer(ptr))
 		}
 	}
-
-	public func getChild() -> Widget {
-		return Widget(gtk_bin_get_child(bin))
+	public var child: Widget? {
+		get {
+			guard let child = gtk_bin_get_child(bin) else {
+				return nil
+			}
+			return Widget.storage[child]
+		}
 	}
 }

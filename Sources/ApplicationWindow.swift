@@ -15,21 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 import CGtk
 
 public class ApplicationWindow: Window {
 	internal var applicationWindow: UnsafeMutablePointer<GtkApplicationWindow>? {
 		get {
-			return UnsafeMutablePointer<GtkApplicationWindow>(OpaquePointer(widget))
+			return UnsafeMutablePointer<GtkApplicationWindow>(OpaquePointer(ptr))
 		}
 	}
-
-	override public init(application: Application) {
-		super.init(application: application)
+	public convenience init?(application: Application) {
+		guard let applicationWindow = gtk_application_window_new(application.application) else {
+			return nil
+		}
+		self.init(ptr: applicationWindow)
 	}
 
-	var showMenubar: Bool {
+	public var showMenubar: Bool {
 		get {
 			return gtk_application_window_get_show_menubar(applicationWindow) != 0
 		}
@@ -37,8 +39,7 @@ public class ApplicationWindow: Window {
 			gtk_application_window_set_show_menubar(applicationWindow, newValue ? 1 : 0)
 		}
 	}
-
-	var id: UInt32 {
+	public var id: guint {
 		get {
 			return gtk_application_window_get_id(applicationWindow)
 		}

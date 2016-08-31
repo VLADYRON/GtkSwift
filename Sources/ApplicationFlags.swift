@@ -18,16 +18,13 @@
 
 import CGtk
 
-public enum ConnectFlag {
-	case After
-	case Swapped
+public enum ApplicationFlags {
+	case None
 
-	func value() -> GConnectFlags {
+	internal func value() -> GApplicationFlags {
 		switch self {
-			case .After:
-				return G_CONNECT_AFTER
-			case .Swapped:
-				return G_CONNECT_SWAPPED
+			case .None:
+				return G_APPLICATION_FLAGS_NONE
 		}
 	}
 }

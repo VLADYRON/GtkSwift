@@ -18,20 +18,33 @@
 
 import CGtk
 
-Application(id: "com.example.application").run {
-	let widget = ApplicationWindow(application: $0)
+Application(id: "com.example.application")?.run {
+	guard let widget = ApplicationWindow(application: $0) else { exit(1) }
+
 	widget.title = "Hello World!"
 	widget.defaultSize = (width: 200, height: 200)
 
-	let buttonBox = ButtonBox()
+	guard let buttonBox = ButtonBox() else { exit(2) }
 	widget.add(widget: buttonBox)
 
-	let button = Button(label: "Hello World!")
+	guard let button = Button(label: "Hello World!") else { exit(3) }
 	buttonBox.add(widget: button)
 
 	button.clicked = { button in
 		print(button)
 		print("hello world!")
 	}
+	print(widget.defaultSize)
 	widget.showAll()
+	var adj = widget.focusVAdjustment
+	let a = Adjustment(value: 2, lower: 3, upper: 10, stepIncrement: 1, pageIncrement: 2, pageSize: 1)
+	adj = a
+	a.changed = { (adjustment: Adjustment) in
+		print(adjustment)
+	}
+	// widget.added = {
+	// 	print($0, $1)
+	// }
+
+	// widget.focusChild = nil
 }

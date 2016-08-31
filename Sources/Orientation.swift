@@ -16,4 +16,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-//import CGtk
+import CGtk
+
+public enum Orientation {
+	case Horizontal
+	case Vertical
+
+	internal func value() -> GtkOrientation {
+		switch self {
+			case .Horizontal:
+				return GTK_ORIENTATION_HORIZONTAL
+			case .Vertical:
+				return GTK_ORIENTATION_VERTICAL
+		}
+	}
+}

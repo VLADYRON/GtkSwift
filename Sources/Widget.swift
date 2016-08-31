@@ -18,42 +18,28 @@
 
 import CGtk
 
-typealias Callback = () -> Void
-class SignalData {
-	var callback: Callback
-	init(callback: @escaping Callback) {
-		self.callback = callback
-	}
-}
 
-public class Widget {
-	public var widget: UnsafeMutablePointer<GtkWidget>?
-	private var signals: [String: (UInt, Any)] = [:]
+public class Widget: Signalable {
+	internal var widget: UnsafeMutablePointer<GtkWidget>
 
-	init() {
-		widget = nil
-	}
-	init(application: Application) {
-		widget = gtk_application_window_new(application.application)
-	}
-	internal init(_ ptr: UnsafeMutablePointer<GtkWidget>) {
-		widget = ptr
-	}
-
-	func showAll() {
-		gtk_widget_show_all(widget!)
-	}
-
-	public typealias ButtonClickedNative = @convention(c)(UnsafeMutablePointer<GtkButton>, gpointer) -> Void
-
-	func addSignal(name: String, callback: @escaping Callback) {
-		let handle: @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void = {
-			let signalData = unsafeBitCast($1, to: SignalData.self)
-			signalData.callback()
+	internal var ptr: UnsafeMutableRawPointer {
+		get {
+			return UnsafeMutableRawPointer(OpaquePointer(widget))
 		}
-
-		let data = SignalData(callback: callback)
-		let id = g_signal_connect_data(widget, name, unsafeBitCast(handle, to: GCallback.self), Unmanaged.passUnretained(data).toOpaque(), nil, G_CONNECT_AFTER)
-		signals[name] = (id, data)
 	}
+	internal static var storage: [UnsafeMutablePointer<GtkWidget>: Widget] = [:]
+	internal init(ptr: UnsafeMutableRawPointer) {
+		widget = UnsafeMutablePointer<GtkWidget>(OpaquePointer(ptr))
+		Widget.storage[widget] = self
+		addSignal(name: "destroy") {[unowned self] in
+			self.destroy?(self)
+			Widget.storage.removeValue(forKey: self.widget)
+		}
+	}
+
+	public func showAll() {
+		gtk_widget_show_all(widget)
+	}
+
+	public var destroy: ((Widget) -> Void)? = nil
 }

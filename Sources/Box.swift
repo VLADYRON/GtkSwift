@@ -1,4 +1,4 @@
-/* 
+/*
  * CGtk Copyright (C) 2016 Tim Diekmann
  * mailto: t.diekmann.3dv@gmail.com
  *
@@ -19,9 +19,9 @@
 import CGtk
 
 public class Box: Container {
-	private var box: UnsafeMutablePointer<GtkBox>? {
+	internal var box: UnsafeMutablePointer<GtkBox>? {
 		get {
-			return UnsafeMutablePointer<GtkBox>(OpaquePointer(widget))
+			return UnsafeMutablePointer<GtkBox>(OpaquePointer(ptr))
 		}
 	}
 }

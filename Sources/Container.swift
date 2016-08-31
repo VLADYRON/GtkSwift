@@ -1,4 +1,4 @@
-/* 
+/*
  * CGtk Copyright (C) 2016 Tim Diekmann
  * mailto: t.diekmann.3dv@gmail.com
  *
@@ -19,16 +19,101 @@
 import CGtk
 
 public class Container: Widget{
-	private var container: UnsafeMutablePointer<GtkContainer>? {
+	internal var container: UnsafeMutablePointer<GtkContainer>? {
 		get {
-			return UnsafeMutablePointer<GtkContainer>(OpaquePointer(widget))
+			return UnsafeMutablePointer<GtkContainer>(OpaquePointer(ptr))
 		}
 	}
-	
-	func add(widget: Widget) {
+
+	public func add(widget: Widget) {
 		gtk_container_add(container, widget.widget)
 	}
-	func remove(widget: Widget) {
+	public func remove(widget: Widget) {
 		gtk_container_remove(container, widget.widget)
+	}
+	public func checkResize() {
+		gtk_container_check_resize(container)
+	}
+
+	public var focusVAdjustment: Adjustment? {
+		get {
+			guard let ptr = gtk_container_get_focus_vadjustment(container) else {
+				return nil
+			}
+			return Adjustment(adjustment: ptr)
+		}
+		set {
+			gtk_container_set_focus_vadjustment(container, newValue?.adjustment)
+		}
+	}
+	public var focusChild: Widget? {
+		get {
+			guard let containerP = gtk_container_get_focus_child(container) else {
+				return nil
+			}
+			return Widget.storage[UnsafeMutablePointer<GtkWidget>(OpaquePointer(containerP))]
+		}
+		set {
+			gtk_container_set_focus_child(container, newValue?.widget)
+		}
+	}
+
+	private var addedId: gulong?
+	public var added: ((Container, Widget) -> Void)? {
+		didSet {
+			if added != nil {
+				addedId = addSignal(name: "add") { [unowned self] (widget: UnsafeMutableRawPointer) in
+					let widget = Widget.storage[UnsafeMutablePointer<GtkWidget>(OpaquePointer(widget))]
+					assert(widget != nil, "Widget must not be null, Contact library creator please!")
+					self.added?(self,widget!)
+				}
+			} else {
+				removeSignal(id: addedId!)
+				addedId = nil
+			}
+		}
+	}
+	private var checkedResizeId: gulong?
+	public var checkedResize: ((Container) -> Void)? {
+		didSet {
+			if checkedResize != nil {
+				checkedResizeId = addSignal(name: "check-resize") { [unowned self] in self.checkedResize?(self) }
+			} else {
+				removeSignal(id: checkedResizeId!)
+				checkedResizeId = nil
+			}
+		}
+	}
+	private var removedId: gulong?
+	public var removed: ((Container, Widget) -> Void)? {
+		didSet {
+			if removed != nil {
+				removedId = addSignal(name: "remove") { [unowned self] (widget: UnsafeMutableRawPointer) in
+					let widget = Widget.storage[UnsafeMutablePointer<GtkWidget>(OpaquePointer(widget))]
+					assert(widget != nil, "Widget must not be null, Contact library creator please!")
+					self.removed?(self,widget!)
+				}
+			} else {
+				removeSignal(id: removedId!)
+				removedId = nil
+			}
+		}
+	}
+	private var focusedChildId: gulong?
+	public var focusedChild: ((Container, Widget?) -> Void)? {
+		didSet {
+			if focusedChild != nil {
+				focusedChildId = addSignal(name: "set-focus-child") { [unowned self] (widget: UnsafeMutableRawPointer?) in
+					guard let widget = widget else {
+						self.focusedChild?(self,nil)
+						return
+					}
+					self.focusedChild?(self,Widget.storage[UnsafeMutablePointer<GtkWidget>(OpaquePointer(widget))])
+				}
+			} else {
+				removeSignal(id: focusedChildId!)
+				focusedChildId = nil
+			}
+		}
 	}
 }

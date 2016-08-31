@@ -1,4 +1,4 @@
-/* 
+/*
  * CGtk Copyright (C) 2016 Tim Diekmann
  * mailto: t.diekmann.3dv@gmail.com
  *
@@ -19,14 +19,13 @@
 import CGtk
 
 public class Window: Bin {
-	private var window: UnsafeMutablePointer<GtkWindow>? {
+	internal var window: UnsafeMutablePointer<GtkWindow>? {
 		get {
-			return UnsafeMutablePointer<GtkWindow>(OpaquePointer(widget))
+			return UnsafeMutablePointer<GtkWindow>(OpaquePointer(ptr))
 		}
 	}
-		
-		
-	var title: String {
+
+	public var title: String {
 		get {
 			return String(cString: gtk_window_get_title(window))
 		}
@@ -34,8 +33,7 @@ public class Window: Bin {
 			gtk_window_set_title(window, newValue)
 		}
 	}
-	
-	var resizeable: Bool {
+	public var resizeable: Bool {
 		get {
 			return gtk_window_get_resizable(window) != 0
 		}
@@ -43,20 +41,16 @@ public class Window: Bin {
 			gtk_window_set_resizable(window, newValue ? 1 : 0)
 		}
 	}
-	
-	var defaultSize: (width: Int32, height: Int32) {
+	public var defaultSize: (width: gint, height: gint) {
 		get {
-			let w: UnsafeMutablePointer<Int32>? = nil
-			let h: UnsafeMutablePointer<Int32>? = nil
-			gtk_window_get_default_size(window, w, h)
-			guard w != nil && h != nil else {
-				return (0, 0)
-			}
-			return (w![0], h![0])
+			var w: gint = 0
+			var h: gint = 0
+			gtk_window_get_default_size(window, &w, &h)
+			return (w, h)
 		}
 		set {
 			gtk_window_set_default_size(window, newValue.width, newValue.height)
 		}
-		
+
 	}
 }
