@@ -27,10 +27,10 @@ public class Container: Widget{
 	internal override init?(object: UnsafeMutableRawPointer?) {
 		super.init(object: object)
 
-		setSignal(name: "add") {[unowned self] widget in self.added?(self, Object.get(object: widget) as! Widget)}
-		setSignal(name: "remove") {[unowned self] widget in self.removed?(self, Object.get(object: widget) as! Widget)}
-		setSignal(name: "set-focus-child") {[unowned self] widget in self.focusedChild?(self, Object.get(object: widget) as? Widget)}
-		setSignal(name: "check-resize") {[unowned self] in self.checkedResize?(self)}
+		connect(signal: "add") {[unowned self] widget in self.added?(self, Object.get(object: widget) as! Widget)}
+		connect(signal: "remove") {[unowned self] widget in self.removed?(self, Object.get(object: widget) as! Widget)}
+		connect(signal: "set-focus-child") {[unowned self] widget in self.focusedChild?(self, Object.get(object: widget) as? Widget)}
+		connect(signal: "check-resize") {[unowned self] in self.checkedResize?(self)}
 	}
 
 	public func add(widget: Widget) {
@@ -53,7 +53,7 @@ public class Container: Widget{
 	}
 	public var focusChild: Widget? {
 		get {
-			let containerP = gtk_container_get_focus_child(container) 
+			let containerP = gtk_container_get_focus_child(container)
 			return Object.get(object: containerP) as? Widget
 		}
 		set {

@@ -38,7 +38,7 @@ public class Object {
 		return unsafeBitCast(g_object_get_data(objectP, "instanceReference"), to: Object.self)
 	}
 
-	private func connectSignal(_ name: String, _ signal: Signal, _ handle: GCallback) {
+	private func setSignal(_ name: String, _ signal: Signal, _ handle: GCallback) {
 		let destroyHandle: @convention(c) (UnsafeMutableRawPointer) -> Void = {
 			Object.signals.removeValue(forKey: unsafeBitCast($0, to: SignalZero.self).id!)
 		}
@@ -51,40 +51,40 @@ public class Object {
 		Object.signals[id] = signal
 	}
 
-	internal func setSignal(name: String, closure: @escaping () -> Void) {
+	internal func connect(signal: String, closure: @escaping () -> Void) {
 		let handle: @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void = {
 			unsafeBitCast($1, to: SignalZero.self).callback()
 		}
-		connectSignal(name, SignalZero(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
+		setSignal(signal, SignalZero(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
 	}
-	internal func setSignal(name: String, closure: @escaping (UnsafeMutableRawPointer) -> Void) {
+	internal func connect(signal: String, closure: @escaping (UnsafeMutableRawPointer) -> Void) {
 		let handle: @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void = {
 			unsafeBitCast($2, to: SignalOne.self).callback($1)
 		}
-		connectSignal(name, SignalOne(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
+		setSignal(signal, SignalOne(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
 	}
-	internal func setSignal(name: String, closure: @escaping (UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void) {
+	internal func connect(signal: String, closure: @escaping (UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void) {
 		let handle: @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void = {
 			unsafeBitCast($3, to: SignalTwo.self).callback($1, $2)
 		}
-		connectSignal(name, SignalTwo(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
+		setSignal(signal, SignalTwo(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
 	}
-	internal func setSignal(name: String, closure: @escaping (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void) {
+	internal func connect(signal: String, closure: @escaping (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void) {
 		let handle: @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void = {
 			unsafeBitCast($4, to: SignalThree.self).callback($1, $2, $3)
 		}
-		connectSignal(name, SignalThree(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
+		setSignal(signal, SignalThree(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
 	}
-	internal func setSignal(name: String, closure: @escaping (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void) {
+	internal func connect(signal: String, closure: @escaping (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void) {
 		let handle: @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void = {
 			unsafeBitCast($5, to: SignalFour.self).callback($1, $2, $3, $4)
 		}
-		connectSignal(name, SignalFour(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
+		setSignal(signal, SignalFour(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
 	}
-	internal func setSignal(name: String, closure: @escaping (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void) {
+	internal func connect(signal: String, closure: @escaping (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void) {
 		let handle: @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void = {
 			unsafeBitCast($6, to: SignalFive.self).callback($1, $2, $3, $4, $5)
 		}
-		connectSignal(name, SignalFive(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
+		setSignal(signal, SignalFive(object: self, closure: closure), unsafeBitCast(handle, to: GCallback.self))
 	}
 }

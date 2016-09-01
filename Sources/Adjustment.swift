@@ -33,8 +33,8 @@ public class Adjustment: Object {
 	internal override init?(object: UnsafeMutableRawPointer?) {
 		super.init(object: object)
 
-		setSignal(name: "value-changed") { [unowned self] in self.valueChanged?(self) }
-		setSignal(name: "changed") { [unowned self] in self.changed?(self) }
+		connect(signal: "value-changed") { [unowned self] in self.valueChanged?(self) }
+		connect(signal: "changed") { [unowned self] in self.changed?(self) }
 	}
 
 	public var value: Double {

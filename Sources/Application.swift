@@ -35,7 +35,7 @@ public class Application: Object {
 	}
 
 	public func run(_ activate: @escaping (Application) -> Void) {
-		setSignal(name: "activate") { [unowned self] in activate(self)}
+		connect(signal: "activate") { [unowned self] in activate(self)}
 		g_application_run(gApplication, CommandLine.argc, CommandLine.unsafeArgv)
 		g_object_unref(application)
 	}

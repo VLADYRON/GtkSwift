@@ -27,7 +27,7 @@ public class Button: Bin {
 	public convenience init?(label: String) {
 		self.init(object: gtk_button_new_with_label(label))
 
-		setSignal(name: "clicked") {[unowned self] in self.clicked?(self)}
+		connect(signal: "clicked") {[unowned self] in self.clicked?(self)}
 	}
 
 	public var clicked: ((Button) -> Void)?

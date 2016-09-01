@@ -30,9 +30,9 @@ Application(id: "com.example.application")?.run {
 	guard let button = Button(label: "Hello World!") else { exit(3) }
 	buttonBox.add(widget: button)
 
-    button.clicked = {
-        print($0)
-    }
+	button.clicked = {
+		print("clicked \($0)")
+	}
 
 	widget.showAll()
 	// var adj = widget.focusVAdjustment
