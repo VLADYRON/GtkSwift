@@ -30,6 +30,9 @@ Application(id: "com.example.application")?.run {
 	guard let button = Button(label: "Hello World!") else { exit(3) }
 	buttonBox.add(widget: button)
 
+    button.clicked = {
+        print($0)
+    }
 
 	widget.showAll()
 	// var adj = widget.focusVAdjustment
@@ -39,8 +42,5 @@ Application(id: "com.example.application")?.run {
 	// 	print("Value changed: \( a.value)")
 	// }
 
-	button.clicked = { button in
-		a.value += 0.1
-	}
 	// widget.focusChild = nil
 }

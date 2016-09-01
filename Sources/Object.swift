@@ -38,7 +38,7 @@ public class Object {
 		return unsafeBitCast(g_object_get_data(objectP, "instanceReference"), to: Object.self)
 	}
 
-	private func connectSignal(_ name: String, _ signal: Signal, _ handle: @escaping GCallback) {
+	private func connectSignal(_ name: String, _ signal: Signal, _ handle: GCallback) {
 		let destroyHandle: @convention(c) (UnsafeMutableRawPointer) -> Void = {
 			Object.signals.removeValue(forKey: unsafeBitCast($0, to: SignalZero.self).id!)
 		}
