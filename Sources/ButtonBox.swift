@@ -24,7 +24,7 @@ public class ButtonBox: Box {
 			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkButtonBox>.self)
 		}
 	}
-	public convenience init?(orientation: Orientation = .Horizontal) {
+	public convenience init(orientation: Orientation = .Horizontal) {
 		self.init(object: gtk_button_box_new(orientation.value()))
 	}
 }

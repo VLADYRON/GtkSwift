@@ -24,17 +24,15 @@ public class Adjustment: Object {
 			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkAdjustment>.self)
 		}
 	}
-	deinit {
-		print(self)
-	}
-	public convenience init?(value: Double, lower: Double, upper: Double, stepIncrement: Double, pageIncrement: Double, pageSize: Double) {
-		self.init(object: gtk_adjustment_new(value, lower, upper, stepIncrement, pageIncrement, pageSize))
-	}
-	internal override init?(object: UnsafeMutableRawPointer?) {
+	internal override init(object: UnsafeMutableRawPointer?) {
 		super.init(object: object)
-
+		
 		connect(signal: "value-changed") { [unowned self] in self.valueChanged?(self) }
 		connect(signal: "changed") { [unowned self] in self.changed?(self) }
+	}
+
+	public convenience init?(value: Double, lower: Double, upper: Double, stepIncrement: Double, pageIncrement: Double, pageSize: Double) {
+		self.init(object: gtk_adjustment_new(value, lower, upper, stepIncrement, pageIncrement, pageSize))
 	}
 
 	public var value: Double {

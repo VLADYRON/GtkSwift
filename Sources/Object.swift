@@ -23,10 +23,9 @@ public class Object {
 
 	internal let object: UnsafeMutablePointer<GObject>
 
-	internal init?(object: UnsafeMutableRawPointer?) {
-		guard let object = object else {
-			return nil
-		}
+	internal init(object: UnsafeMutableRawPointer?) {
+		assert(object != nil, "GObject must not be null")
+		
 		self.object = unsafeBitCast(object, to: UnsafeMutablePointer<GObject>.self)
 		g_object_set_data(self.object, "instanceReference", unsafeBitCast(self, to: gpointer.self))
 	}
@@ -38,7 +37,7 @@ public class Object {
 		return unsafeBitCast(g_object_get_data(objectP, "instanceReference"), to: Object.self)
 	}
 
-	private func setSignal(_ name: String, _ signal: Signal, _ handle: GCallback) {
+	private func setSignal(_ name: String, _ signal: Signal, _ handle: @escaping GCallback) {
 		let destroyHandle: @convention(c) (UnsafeMutableRawPointer) -> Void = {
 			Object.signals.removeValue(forKey: unsafeBitCast($0, to: SignalZero.self).id!)
 		}

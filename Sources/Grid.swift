@@ -18,25 +18,17 @@
 
 import CGtk
 
-
-public class Widget: Object {
-	internal var widget: UnsafeMutablePointer<GtkWidget> {
+class Grid: Container {
+	internal var grid: UnsafeMutablePointer<GtkGrid>? {
 		get {
-			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkWidget>.self)
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkGrid>.self)
 		}
 	}
-
-	public func showAll() {
-		gtk_widget_show_all(widget)
-	}
 	
-	public func destroy() {
-		destroy(widget: self)
+	public convenience init() {
+		self.init(object: gtk_grid_new())
 	}
-	public func destroy(widget: Widget) {
-		gtk_widget_destroy(widget.widget)
+	public func attach(widget: Widget, left: gint, top: gint, width: gint = 1, height: gint = 1) {
+		gtk_grid_attach(grid, widget.widget, left, top, width, height)
 	}
-	
-	public var destroyed: ((Widget) -> Void)? = nil
-	
 }

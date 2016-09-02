@@ -25,11 +25,11 @@ public class ApplicationWindow: Window {
 		}
 	}
 
-	public convenience init?(application: Application) {
+	public convenience init(application: Application) {
 		self.init(object: gtk_application_window_new(application.application))
 	}
 
-	public var showMenubar: Bool {
+	public var showMenuBar: Bool {
 		get {
 			return gtk_application_window_get_show_menubar(applicationWindow) != 0
 		}

@@ -30,7 +30,7 @@ public class Application: Object {
 		}
 	}
 
-	public convenience init?(id: String, flags: ApplicationFlags = .None) {
+	public convenience init(id: String, flags: ApplicationFlags = .None) {
 		self.init(object: gtk_application_new(id, flags.value()))
 	}
 

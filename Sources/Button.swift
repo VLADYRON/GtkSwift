@@ -24,7 +24,7 @@ public class Button: Bin {
 			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkButton>.self)
 		}
 	}
-	public convenience init?(label: String) {
+	public convenience init(label: String) {
 		self.init(object: gtk_button_new_with_label(label))
 
 		connect(signal: "clicked") {[unowned self] in self.clicked?(self)}

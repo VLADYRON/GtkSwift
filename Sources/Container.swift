@@ -24,7 +24,7 @@ public class Container: Widget{
 			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkContainer>.self)
 		}
 	}
-	internal override init?(object: UnsafeMutableRawPointer?) {
+	internal override init(object: UnsafeMutableRawPointer?) {
 		super.init(object: object)
 
 		connect(signal: "add") {[unowned self] widget in self.added?(self, Object.get(object: widget) as! Widget)}
@@ -32,6 +32,7 @@ public class Container: Widget{
 		connect(signal: "set-focus-child") {[unowned self] widget in self.focusedChild?(self, Object.get(object: widget) as? Widget)}
 		connect(signal: "check-resize") {[unowned self] in self.checkedResize?(self)}
 	}
+	
 
 	public func add(widget: Widget) {
 		gtk_container_add(container, widget.widget)
@@ -58,6 +59,14 @@ public class Container: Widget{
 		}
 		set {
 			gtk_container_set_focus_child(container, newValue?.widget)
+		}
+	}
+	public var borderWith: guint {
+		get {
+			return gtk_container_get_border_width(container)
+		}
+		set {
+			gtk_container_set_border_width(container, newValue)
 		}
 	}
 

@@ -29,7 +29,7 @@ class Signal {
 class SignalZero: Signal {
 	typealias Callback = () -> Void
 	var callback: Callback
-	init(object: Object, closure: Callback) {
+	init(object: Object, closure:  @escaping Callback) {
 		self.callback = closure
 		super.init(object: object)
 	}
@@ -37,7 +37,7 @@ class SignalZero: Signal {
 class SignalOne: Signal {
 	typealias Callback = (UnsafeMutableRawPointer) -> Void
 	var callback: Callback
-	init(object: Object, closure: Callback) {
+	init(object: Object, closure:  @escaping Callback) {
 		self.callback = closure
 		super.init(object: object)
 	}
@@ -45,7 +45,7 @@ class SignalOne: Signal {
 class SignalTwo: Signal {
 	typealias Callback = (UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void
 	var callback: Callback
-	init(object: Object, closure: Callback) {
+	init(object: Object, closure:  @escaping Callback) {
 		self.callback = closure
 		super.init(object: object)
 	}
@@ -53,7 +53,7 @@ class SignalTwo: Signal {
 class SignalThree: Signal {
 	typealias Callback = (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void
 	var callback: Callback
-	init(object: Object, closure: Callback) {
+	init(object: Object, closure:  @escaping Callback) {
 		self.callback = closure
 		super.init(object: object)
 	}
@@ -61,7 +61,7 @@ class SignalThree: Signal {
 class SignalFour: Signal {
 	typealias Callback = (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void
 	var callback: Callback
-	init(object: Object, closure: Callback) {
+	init(object: Object, closure:  @escaping Callback) {
 		self.callback = closure
 		super.init(object: object)
 	}
@@ -69,7 +69,7 @@ class SignalFour: Signal {
 class SignalFive: Signal {
 	typealias Callback = (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> Void
 	var callback: Callback
-	init(object: Object, closure: Callback) {
+	init(object: Object, closure:  @escaping Callback) {
 		self.callback = closure
 		super.init(object: object)
 	}

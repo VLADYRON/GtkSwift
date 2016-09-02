@@ -18,29 +18,29 @@
 
 import CGtk
 
-Application(id: "com.example.application")?.run {
-	guard let widget = ApplicationWindow(application: $0) else { exit(1) }
-
-	widget.title = "Hello World!"
-	widget.defaultSize = (width: 200, height: 200)
-
-	guard let buttonBox = ButtonBox() else { exit(2) }
-	widget.add(widget: buttonBox)
-
-	guard let button = Button(label: "Hello World!") else { exit(3) }
-	buttonBox.add(widget: button)
-
-	button.clicked = {
-		print("clicked \($0)")
-	}
-
-	widget.showAll()
-	// var adj = widget.focusVAdjustment
-	// guard let a = Adjustment(value: 2, lower: 3, upper: 10, stepIncrement: 1, pageIncrement: 2, pageSize: 1) else {exit(4)}
-	// widget.focusVAdjustment = a
-	// widget.focusVAdjustment?.valueChanged = { [unowned a] in
-	// 	print("Value changed: \( a.value)")
-	// }
-
-	// widget.focusChild = nil
+Application(id: "com.example.application").run {
+	let window = ApplicationWindow(application: $0)
+	window.title = "Window"
+	window.borderWith = 10
+	
+	let grid = Grid()
+	window.add(widget: grid)
+	
+	var button = Button(label: "Button 1")
+	button.clicked = {_ in print("Hello World") }
+	grid.attach(widget: button, left: 0, top: 0)
+	
+	button = Button(label: "Button 2")
+	button.clicked = {_ in print("Hello World") }
+	grid.attach(widget: button, left: 1, top: 0)
+	
+	button = Button(label: "Button 2")
+	button.clicked = {_ in print("Hello World") }
+	grid.attach(widget: button, left: 1, top: 0)
+	
+	button = Button(label: "Quit")
+	button.clicked = { _ in window.destroy() }
+	grid.attach(widget: button, left: 0, top: 1, width: 2)
+	
+	window.showAll()
 }
