@@ -18,59 +18,55 @@
 
 import CGtk
 
-public class Container: Widget{
-	internal var container: UnsafeMutablePointer<GtkContainer>? {
-		get {
-			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkContainer>.self)
-		}
+public protocol ContainerProtocol: WidgetProtocol {
+	typealias Pointer = UnsafeMutablePointer<GtkContainer>
+}
+public struct Container: ContainerProtocol, Object, Buildable {
+	public var underlying: UnsafeMutablePointer<GtkContainer>
+	
+	init(_ ptr: UnsafeMutableRawPointer) {
+		underlying = unsafeBitCast(ptr, to: Pointer.self)
 	}
-//	internal override init(object: UnsafeMutableRawPointer?) {
-//		super.init(object: object)
-//
-//		connect(signal: "add") {[unowned self] widget in self.added?(self, Object.get(object: widget) as! Widget)}
-//		connect(signal: "remove") {[unowned self] widget in self.removed?(self, Object.get(object: widget) as! Widget)}
-//		connect(signal: "set-focus-child") {[unowned self] widget in self.focusedChild?(self, Object.get(object: widget) as? Widget)}
-//		connect(signal: "check-resize") {[unowned self] in self.checkedResize?(self)}
-//	}
+}
 
-
+public extension Object where Self: ContainerProtocol {
 	public func add(widget: Widget) {
-		gtk_container_add(container, widget.widget)
+		gtk_container_add(underlying, widget.underlying)
 	}
 	public func remove(widget: Widget) {
-		gtk_container_remove(container, widget.widget)
+		gtk_container_remove(underlying, widget.underlying)
 	}
 	public func checkResize() {
-		gtk_container_check_resize(container)
+		gtk_container_check_resize(underlying)
 	}
-
-//	public var focusVAdjustment: Adjustment? {
-//		get {
-//			return Adjustment(object: gtk_container_get_focus_vadjustment(container))
-//		}
-//		set {
-//			gtk_container_set_focus_vadjustment(container, newValue?.adjustment)
-//		}
-//	}
 	public var focusChild: Widget? {
 		get {
-			return Widget(gtk_container_get_focus_child(container))
+			return Widget(gtk_container_get_focus_child(underlying))
 		}
 		set {
-			gtk_container_set_focus_child(container, newValue?.widget)
+			gtk_container_set_focus_child(underlying, newValue?.underlying)
 		}
 	}
 	public var borderWith: guint {
 		get {
-			return gtk_container_get_border_width(container)
+			return gtk_container_get_border_width(underlying)
 		}
 		set {
-			gtk_container_set_border_width(container, newValue)
+			gtk_container_set_border_width(underlying, newValue)
 		}
 	}
-
-//	public var added: ((Container, Widget) -> Void)?
-//	public var removed: ((Container, Widget) -> Void)?
-//	public var checkedResize: ((Container) -> Void)?
-//	public var focusedChild: ((Container, Widget?) -> Void)?
+	
+	
+	var added: AddedSignal {
+		return AddedSignal(instance: underlying)
+	}
+	var removed: RemovedSignal {
+		return RemovedSignal(instance: underlying)
+	}
+	var focusedChild: FocusedChildSignal {
+		return FocusedChildSignal(instance: underlying)
+	}
+	var checkedResize: CheckedResizeSignal {
+		return CheckedResizeSignal(instance: underlying)
+	}
 }
