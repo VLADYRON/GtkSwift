@@ -18,33 +18,36 @@
 
 import CGtk
 
-internal class SignalData {
-	let function: Any
-	init(_ function: Any) {
-		self.function = function
-	}
+internal class Data {
+  let function: Any
+  init(_ function: Any) {
+    self.function = function
+  }
 }
 
-public struct Signal<Func, CFunc> {
-	@discardableResult public func connect(swapped: Bool = false, to closure: Func) -> UInt {
-		let data = Unmanaged.passRetained(SignalData(closure)).toOpaque()
-		let destructor: @convention(c) (UnsafeRawPointer) -> Void = { data in
-			let _ = Unmanaged<SignalData>.fromOpaque(data).takeRetainedValue()
-		}
-		let cDestructor = unsafeBitCast(destructor, to: GClosureNotify.self)
-		return g_signal_connect_data(object, signal, cClosure, data, cDestructor, swapped ? G_CONNECT_SWAPPED : G_CONNECT_AFTER)
-	}
-	public func disconnect(from closure: UInt) {
-		g_signal_handler_disconnect(object, closure)
-	}
-	
-	internal init(object: Object, signal: String, cClosure: CFunc) {
-		self.object = object.object
-		self.signal = signal
-		self.cClosure = unsafeBitCast(cClosure, to: GCallback.self)
-	}
-	
-	private let object: UnsafeMutablePointer<GObject>
-	private let signal: String
-	private let cClosure: GCallback
+internal func connectSignal(object: UnsafeMutableRawPointer, signal: String, swapped: Bool = false, to function: Any, _ callback: @escaping GCallback) -> UInt {
+  let data = Unmanaged.passRetained(Data(function)).toOpaque()
+  let destructor: @convention(c) (UnsafeRawPointer) -> Void = {
+    data in
+    let _ = Unmanaged<Data>.fromOpaque(data).takeRetainedValue()
+  }
+  let cDestructor = unsafeBitCast(destructor, to: GClosureNotify.self)
+  return g_signal_connect_data(object, signal, callback, data, cDestructor, swapped ? G_CONNECT_SWAPPED : G_CONNECT_AFTER)
+}
+
+protocol Signal {
+  associatedtype Instance
+  var instance: Instance! { get set }
+  init()
+}
+
+extension Signal {
+  init(_ instance: Instance) {
+    self.init()
+    self.instance = instance
+  }
+  
+  public func disconnect(from id: UInt) {
+    g_signal_handler_disconnect(instance as! gpointer!, id)
+  }
 }
