@@ -18,7 +18,7 @@
 
 import CGtk
 
-internal extension Array where Element: Window {
+internal extension Array where Element: WindowProtocol {
 	internal init(from list: UnsafeMutablePointer<GList>?) {
 		var list = list
 		self.init()
