@@ -21,8 +21,8 @@ import CGtk
 public enum Orientation {
 	case Horizontal
 	case Vertical
-
-	internal func value() -> GtkOrientation {
+	
+	internal var value: GtkOrientation {
 		switch self {
 			case .Horizontal:
 				return GTK_ORIENTATION_HORIZONTAL

@@ -18,13 +18,19 @@
 
 import CGtk
 
-public class ButtonBox: Box {
-	internal var buttonBox: UnsafeMutablePointer<GtkButtonBox>? {
-		get {
-			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkButtonBox>.self)
-		}
-	}
-	public convenience init(orientation: Orientation = .Horizontal) {
-		self.init(gtk_button_box_new(orientation.value())!)
-	}
+public protocol ButtonBoxProtocol: BoxProtocol {
+  typealias Pointer = UnsafeMutablePointer<GtkButtonBox>
+}
+public struct ButtonBox: ButtonBoxProtocol, Object, Buildable {
+  public var underlying: UnsafeMutablePointer<GtkButtonBox>
+  
+  init(_ ptr: UnsafeMutableRawPointer) {
+    underlying = unsafeBitCast(ptr, to: Pointer.self)
+  }
+  public init(orientation: Orientation = .Horizontal) {
+    self.init(unsafeBitCast(gtk_button_box_new(orientation.value), to: Pointer.self))
+  }
+}
+
+public extension Object where Self: BoxProtocol {
 }
