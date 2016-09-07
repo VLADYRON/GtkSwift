@@ -24,9 +24,8 @@ public class ApplicationWindow: Window {
 			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkApplicationWindow>.self)
 		}
 	}
-
 	public convenience init(application: Application) {
-		self.init(object: gtk_application_window_new(application.application))
+		self.init(gtk_application_window_new(application.application)!)
 	}
 
 	public var showMenuBar: Bool {

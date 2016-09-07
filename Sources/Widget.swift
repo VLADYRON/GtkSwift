@@ -25,18 +25,20 @@ public class Widget: Object {
 			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkWidget>.self)
 		}
 	}
+//	internal override init(object: UnsafeMutableRawPointer?) {
+//		super.init(object: object)
+//
+//		connect(signal: "destroy") {[unowned self] in self.destroyed?(self)}
+//	}
 
 	public func showAll() {
 		gtk_widget_show_all(widget)
 	}
-	
+
 	public func destroy() {
-		destroy(widget: self)
+		gtk_widget_destroy(widget)
 	}
-	public func destroy(widget: Widget) {
-		gtk_widget_destroy(widget.widget)
-	}
-	
-	public var destroyed: ((Widget) -> Void)? = nil
-	
+
+//	public var destroyed: ((Widget) -> Void)? = nil
+
 }

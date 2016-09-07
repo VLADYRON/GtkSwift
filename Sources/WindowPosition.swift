@@ -18,20 +18,25 @@
 
 import CGtk
 
-public class Object {
-	internal let object: UnsafeMutablePointer<GObject>
-	internal convenience init?(_ object: UnsafeMutableRawPointer?) {
-		guard let object = object else {
-			return nil
+public enum WindowPosition {
+	case None
+	case Center
+	case Mouse
+	case CenterAlways
+	case CenterOnParent
+	
+	internal var value: GtkWindowPosition { get{
+		switch self {
+		case .None:
+			return GTK_WIN_POS_NONE
+		case .Center:
+			return GTK_WIN_POS_CENTER
+		case .Mouse:
+			return GTK_WIN_POS_MOUSE
+		case .CenterAlways:
+			return GTK_WIN_POS_CENTER_ALWAYS
+		case .CenterOnParent:
+			return GTK_WIN_POS_CENTER_ON_PARENT
 		}
-		self.init(object)
-	}
-	internal init(_ object: UnsafeMutableRawPointer) {
-		self.object = unsafeBitCast(object, to: UnsafeMutablePointer<GObject>.self)
-	}
-	public func gTypeFromInstance() -> GType {
-		let n_Instance = unsafeBitCast(object, to: UnsafePointer<GTypeInstance>.self).pointee
-		let n_Class = unsafeBitCast(n_Instance.g_class, to: UnsafePointer<GTypeClass>.self)
-		return n_Class.pointee.g_type
-	}
+	}}
 }

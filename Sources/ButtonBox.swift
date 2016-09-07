@@ -25,6 +25,6 @@ public class ButtonBox: Box {
 		}
 	}
 	public convenience init(orientation: Orientation = .Horizontal) {
-		self.init(object: gtk_button_box_new(orientation.value()))
+		self.init(gtk_button_box_new(orientation.value())!)
 	}
 }

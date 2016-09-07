@@ -24,15 +24,15 @@ public class Container: Widget{
 			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkContainer>.self)
 		}
 	}
-	internal override init(object: UnsafeMutableRawPointer?) {
-		super.init(object: object)
+//	internal override init(object: UnsafeMutableRawPointer?) {
+//		super.init(object: object)
+//
+//		connect(signal: "add") {[unowned self] widget in self.added?(self, Object.get(object: widget) as! Widget)}
+//		connect(signal: "remove") {[unowned self] widget in self.removed?(self, Object.get(object: widget) as! Widget)}
+//		connect(signal: "set-focus-child") {[unowned self] widget in self.focusedChild?(self, Object.get(object: widget) as? Widget)}
+//		connect(signal: "check-resize") {[unowned self] in self.checkedResize?(self)}
+//	}
 
-		connect(signal: "add") {[unowned self] widget in self.added?(self, Object.get(object: widget) as! Widget)}
-		connect(signal: "remove") {[unowned self] widget in self.removed?(self, Object.get(object: widget) as! Widget)}
-		connect(signal: "set-focus-child") {[unowned self] widget in self.focusedChild?(self, Object.get(object: widget) as? Widget)}
-		connect(signal: "check-resize") {[unowned self] in self.checkedResize?(self)}
-	}
-	
 
 	public func add(widget: Widget) {
 		gtk_container_add(container, widget.widget)
@@ -44,18 +44,17 @@ public class Container: Widget{
 		gtk_container_check_resize(container)
 	}
 
-	public var focusVAdjustment: Adjustment? {
-		get {
-			return Adjustment(object: gtk_container_get_focus_vadjustment(container))
-		}
-		set {
-			gtk_container_set_focus_vadjustment(container, newValue?.adjustment)
-		}
-	}
+//	public var focusVAdjustment: Adjustment? {
+//		get {
+//			return Adjustment(object: gtk_container_get_focus_vadjustment(container))
+//		}
+//		set {
+//			gtk_container_set_focus_vadjustment(container, newValue?.adjustment)
+//		}
+//	}
 	public var focusChild: Widget? {
 		get {
-			let containerP = gtk_container_get_focus_child(container)
-			return Object.get(object: containerP) as? Widget
+			return Widget(gtk_container_get_focus_child(container))
 		}
 		set {
 			gtk_container_set_focus_child(container, newValue?.widget)
@@ -70,8 +69,8 @@ public class Container: Widget{
 		}
 	}
 
-	public var added: ((Container, Widget) -> Void)?
-	public var removed: ((Container, Widget) -> Void)?
-	public var checkedResize: ((Container) -> Void)?
-	public var focusedChild: ((Container, Widget?) -> Void)?
+//	public var added: ((Container, Widget) -> Void)?
+//	public var removed: ((Container, Widget) -> Void)?
+//	public var checkedResize: ((Container) -> Void)?
+//	public var focusedChild: ((Container, Widget?) -> Void)?
 }

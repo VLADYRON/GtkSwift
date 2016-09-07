@@ -18,20 +18,25 @@
 
 import CGtk
 
-public class Object {
-	internal let object: UnsafeMutablePointer<GObject>
-	internal convenience init?(_ object: UnsafeMutableRawPointer?) {
-		guard let object = object else {
-			return nil
+internal extension Array where Element: Window {
+	internal init(from list: UnsafeMutablePointer<GList>?) {
+		var list = list
+		self.init()
+		var element: GList
+		while (list != nil) {
+			element = list!.pointee
+			append(Window(element.data) as! Element)
+			list = element.next
 		}
-		self.init(object)
 	}
-	internal init(_ object: UnsafeMutableRawPointer) {
-		self.object = unsafeBitCast(object, to: UnsafeMutablePointer<GObject>.self)
-	}
-	public func gTypeFromInstance() -> GType {
-		let n_Instance = unsafeBitCast(object, to: UnsafePointer<GTypeInstance>.self).pointee
-		let n_Class = unsafeBitCast(n_Instance.g_class, to: UnsafePointer<GTypeClass>.self)
-		return n_Class.pointee.g_type
+	internal init(from list: UnsafeMutablePointer<GSList>?) {
+		var list = list
+		self.init()
+		var element: GSList
+		while (list != nil) {
+			element = list!.pointee
+			append(Window(element.data) as! Element)
+			list = element.next
+		}
 	}
 }

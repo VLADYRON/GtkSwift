@@ -19,16 +19,19 @@
 import CGtk
 
 public class Button: Bin {
-	internal var button: UnsafeMutablePointer<GtkButton>? {
+	internal var button: UnsafeMutablePointer<GtkButton> {
 		get {
 			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkButton>.self)
 		}
 	}
 	public convenience init(label: String) {
-		self.init(object: gtk_button_new_with_label(label))
-
-		connect(signal: "clicked") {[unowned self] in self.clicked?(self)}
+		self.init(gtk_button_new_with_label(label)!)
 	}
-
-	public var clicked: ((Button) -> Void)?
+	
+	public typealias Clicked = (Button)->Void
+	public lazy var clicked: Signal<Clicked,(@convention(c)(UnsafeMutablePointer<GtkButton>, UnsafeRawPointer) -> Void)>
+	= Signal(object: self, signal: "clicked", cClosure: { instance, data in
+		let function = Unmanaged<SignalData>.fromOpaque(data).takeUnretainedValue().function as! Clicked
+		function(Button(instance))
+	})
 }

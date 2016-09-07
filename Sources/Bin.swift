@@ -24,12 +24,10 @@ public class Bin: Container {
 			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkBin>.self)
 		}
 	}
+	
 	public var child: Widget? {
 		get {
-			guard let child = gtk_bin_get_child(bin) else {
-				return nil
-			}
-			return Object.get(object: child) as? Widget
+			return Widget(gtk_bin_get_child(bin))
 		}
 	}
 }

@@ -18,20 +18,27 @@
 
 import CGtk
 
-public class Object {
-	internal let object: UnsafeMutablePointer<GObject>
-	internal convenience init?(_ object: UnsafeMutableRawPointer?) {
-		guard let object = object else {
-			return nil
+public class ShortcutsWindow : Window {
+	internal var applicationWindow: UnsafeMutablePointer<GtkApplicationWindow> {
+		get {
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkApplicationWindow>.self)
 		}
-		self.init(object)
 	}
-	internal init(_ object: UnsafeMutableRawPointer) {
-		self.object = unsafeBitCast(object, to: UnsafeMutablePointer<GObject>.self)
+	public convenience init(application: Application) {
+		self.init(gtk_application_window_new(application.application)!)
 	}
-	public func gTypeFromInstance() -> GType {
-		let n_Instance = unsafeBitCast(object, to: UnsafePointer<GTypeInstance>.self).pointee
-		let n_Class = unsafeBitCast(n_Instance.g_class, to: UnsafePointer<GTypeClass>.self)
-		return n_Class.pointee.g_type
+	
+	public var showMenuBar: Bool {
+		get {
+			return gtk_application_window_get_show_menubar(applicationWindow) != 0
+		}
+		set {
+			gtk_application_window_set_show_menubar(applicationWindow, newValue ? 1 : 0)
+		}
+	}
+	public var id: guint {
+		get {
+			return gtk_application_window_get_id(applicationWindow)
+		}
 	}
 }

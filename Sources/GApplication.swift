@@ -18,20 +18,17 @@
 
 import CGtk
 
-public class Object {
-	internal let object: UnsafeMutablePointer<GObject>
-	internal convenience init?(_ object: UnsafeMutableRawPointer?) {
-		guard let object = object else {
-			return nil
+public class GlibApplication: Object {
+	private var gApplication: UnsafeMutablePointer<GApplication> {
+		get {
+			return unsafeBitCast(object, to: UnsafeMutablePointer<GApplication>.self)
 		}
-		self.init(object)
 	}
-	internal init(_ object: UnsafeMutableRawPointer) {
-		self.object = unsafeBitCast(object, to: UnsafeMutablePointer<GObject>.self)
+	public convenience init(id: String, flags: ApplicationFlags = .None) {
+		self.init(g_application_new(id, flags.value())!)
 	}
-	public func gTypeFromInstance() -> GType {
-		let n_Instance = unsafeBitCast(object, to: UnsafePointer<GTypeInstance>.self).pointee
-		let n_Class = unsafeBitCast(n_Instance.g_class, to: UnsafePointer<GTypeClass>.self)
-		return n_Class.pointee.g_type
+	public func run() {
+		g_application_run(gApplication, CommandLine.argc, CommandLine.unsafeArgv)
+		g_object_unref(gApplication)
 	}
 }
