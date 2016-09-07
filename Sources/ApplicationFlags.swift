@@ -20,8 +20,8 @@ import CGtk
 
 public enum ApplicationFlags {
 	case None
-
-	internal func value() -> GApplicationFlags {
+	
+	internal var value: GApplicationFlags {
 		switch self {
 			case .None:
 				return G_APPLICATION_FLAGS_NONE
