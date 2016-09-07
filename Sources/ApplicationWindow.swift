@@ -18,27 +18,29 @@
 
 import CGtk
 
-public class ApplicationWindow: Window {
-	internal var applicationWindow: UnsafeMutablePointer<GtkApplicationWindow> {
-		get {
-			return unsafeBitCast(object, to: UnsafeMutablePointer<GtkApplicationWindow>.self)
-		}
+public protocol ApplicationWindowProtocol: WindowProtocol {
+	typealias Pointer = UnsafeMutablePointer<GtkApplicationWindow>
+}
+public struct ApplicationWindow: ApplicationWindowProtocol, Object, Buildable {
+	public var underlying: UnsafeMutablePointer<GtkApplicationWindow>
+	
+	init(_ ptr: UnsafeMutableRawPointer) {
+		underlying = unsafeBitCast(ptr, to: Pointer.self)
 	}
-	public convenience init(application: Application) {
-		self.init(gtk_application_window_new(application.application)!)
+	public init(application: Application) {
+		self.init(unsafeBitCast(gtk_application_window_new(application.underlying), to: Pointer.self))
 	}
+}
 
+public extension Object where Self: ApplicationWindowProtocol {
 	public var showMenuBar: Bool {
 		get {
-			return gtk_application_window_get_show_menubar(applicationWindow) != 0
-		}
-		set {
-			gtk_application_window_set_show_menubar(applicationWindow, newValue ? 1 : 0)
+			return gtk_application_window_get_show_menubar(underlying) != 0
+		} set {
+			gtk_application_window_set_show_menubar(underlying, newValue ? 1 : 0)
 		}
 	}
 	public var id: guint {
-		get {
-			return gtk_application_window_get_id(applicationWindow)
-		}
+		return gtk_application_window_get_id(underlying)
 	}
 }
