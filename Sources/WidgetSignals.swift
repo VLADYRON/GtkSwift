@@ -18,27 +18,14 @@
 
 import CGtk
 
-public protocol WidgetProtocol {
-  typealias Pointer = UnsafeMutablePointer<GtkWidget>
-}
-public struct Widget: WidgetProtocol, Object, Buildable {
-  public var underlying: UnsafeMutablePointer<GtkWidget>
-  
-  init(_ ptr: UnsafeMutableRawPointer) {
-    underlying = unsafeBitCast(ptr, to: Pointer.self)
-  }
-}
-
-public extension Object where Self: WidgetProtocol {
-  public func showAll() {
-    gtk_widget_show_all(underlying)
-  }
-  
-  public func destroy() {
-    gtk_widget_destroy(underlying)
-  }
-  
-  var destroyed: DestroyedSignal {
-    return DestroyedSignal(instance: underlying)
+public struct DestroyedSignal: Signal {
+  typealias Instance = UnsafeMutablePointer<GtkWidget>
+  var instance: Instance!
+  private typealias Function = (Widget) -> Void
+  @discardableResult public func connect(swapped: Bool = false, to function: Function) -> UInt {
+    let callback: (@convention(c)(Instance, UnsafeRawPointer) -> Void) = {
+      (Unmanaged<Data>.fromOpaque($1).takeUnretainedValue().function as! Function)(Widget($0))
+    }
+    return connectSignal(object: instance, signal: "destroy", swapped: swapped, to: function, unsafeBitCast(callback, to: GCallback.self))
   }
 }
