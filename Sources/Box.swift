@@ -18,16 +18,21 @@
 
 import CGtk
 
-public protocol BoxProtocol: ContainerProtocol {
-  typealias Pointer = UnsafeMutablePointer<GtkBox>
+public protocol BoxProtocol: ContainerProtocol, Buildable {
 }
-public struct Box: BoxProtocol, Object, Buildable {
-  public var underlying: UnsafeMutablePointer<GtkBox>
-  
-  init(_ ptr: UnsafeMutableRawPointer) {
-    underlying = unsafeBitCast(ptr, to: Pointer.self)
+
+public struct Box: Object, BoxProtocol {
+  public let handle: UnsafeMutableRawPointer
+  init(_ ptr: UnsafeMutablePointer<GtkBox>) {
+    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
 }
 
-public extension Object where Self: BoxProtocol {
+////////////////////////////////////////////////////////////////////////////////
+/// Implementation
+////////////////////////////////////////////////////////////////////////////////
+extension BoxProtocol {
+  var box: UnsafeMutablePointer<GtkBox> {
+    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkBox>.self)
+  }
 }

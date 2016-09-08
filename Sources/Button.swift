@@ -18,22 +18,41 @@
 
 import CGtk
 
-public protocol ButtonProtocol: WidgetProtocol {
-  typealias Pointer = UnsafeMutablePointer<GtkButton>
+public protocol ButtonProtocol: ContainerProtocol, Buildable {
+  var clicked: ClickedSignal { get }
 }
-public struct Button: ButtonProtocol, Object, Buildable {
-  public var underlying: UnsafeMutablePointer<GtkButton>
-  
-  init(_ ptr: UnsafeMutableRawPointer) {
-    underlying = unsafeBitCast(ptr, to: Pointer.self)
+
+public struct Button: Object, ButtonProtocol {
+  public let handle: UnsafeMutableRawPointer
+  init(_ ptr: UnsafeMutablePointer<GtkButton>) {
+    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
   public init(label: String) {
-    self.init(unsafeBitCast(gtk_button_new_with_label(label), to: Pointer.self))
+    self.init(gtk_button_new_with_label(label))
   }
 }
 
-public extension Object where Self: ButtonProtocol {
-  var clicked: ClickedSignal {
-    return ClickedSignal(instance: underlying)
+////////////////////////////////////////////////////////////////////////////////
+/// Implementation
+////////////////////////////////////////////////////////////////////////////////
+extension ButtonProtocol {
+  var button: UnsafeMutablePointer<GtkButton> {
+    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkButton>.self)
+  }
+  
+  public var clicked: ClickedSignal {
+    return ClickedSignal(instance: button)
+  }
+}
+
+public struct ClickedSignal: Signal {
+  typealias Instance = UnsafeMutablePointer<GtkButton>
+  var instance: Instance!
+  private typealias Function = (Button) -> Void
+  @discardableResult public func connect(swapped: Bool = false, to function: Function) -> UInt {
+    let callback: (@convention(c)(Instance, UnsafeRawPointer) -> Void) = {
+      (Unmanaged<Data>.fromOpaque($1).takeUnretainedValue().function as! Function)(Button($0))
+    }
+    return connectSignal(object: instance, signal: "clicked", swapped: swapped, to: function, unsafeBitCast(callback, to: GCallback.self))
   }
 }

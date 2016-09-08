@@ -18,7 +18,26 @@
 
 import CGtk
 
-public protocol Object {
-  associatedtype Pointer
-  var underlying: Pointer { get }
+protocol Object {
+  associatedtype GtkPointer
+  init(_ ptr: GtkPointer)
+}
+
+extension Object {
+  init(_ ptr: UnsafeMutablePointer<GObject>) {
+    self.init(unsafeBitCast(ptr, to: GtkPointer.self))
+  }
+  init(_ ptr: UnsafeMutableRawPointer) {
+    self.init(unsafeBitCast(ptr, to: GtkPointer.self))
+  }
+}
+
+public protocol ObjectProtocol {
+  var handle: UnsafeMutableRawPointer { get }
+}
+
+extension ObjectProtocol {
+  var opaque: OpaquePointer {
+    return unsafeBitCast(handle, to: OpaquePointer.self)
+  }
 }

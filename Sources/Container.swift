@@ -19,54 +19,114 @@
 import CGtk
 
 public protocol ContainerProtocol: WidgetProtocol {
-  typealias Pointer = UnsafeMutablePointer<GtkContainer>
-}
-public struct Container: ContainerProtocol, Object, Buildable {
-  public var underlying: UnsafeMutablePointer<GtkContainer>
+  mutating func add(widget: WidgetProtocol)
+  mutating func remove(widget: WidgetProtocol)
+  mutating func checkResize()
+  var focusChild: WidgetProtocol? { get set }
+  var borderWith: guint { get set }
   
-  init(_ ptr: UnsafeMutableRawPointer) {
-    underlying = unsafeBitCast(ptr, to: Pointer.self)
+  var added: AddedSignal { get }
+  var removed: RemovedSignal { get }
+  var focusedChild: FocusedChildSignal { get }
+  var checkedResize: CheckedResizeSignal { get }
+}
+public struct Container: Object, ContainerProtocol, Buildable {
+  public let handle: UnsafeMutableRawPointer
+  
+  init(_ ptr: UnsafeMutablePointer<GtkContainer>) {
+    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
 }
 
-public extension Object where Self: ContainerProtocol {
-  public func add<T:protocol<Object, WidgetProtocol>>(widget: T) {
-    gtk_container_add(underlying, widget.underlying)
+extension ContainerProtocol {
+  var container: UnsafeMutablePointer<GtkContainer> {
+    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkContainer>.self)
   }
-  public func remove<T:protocol<Object, WidgetProtocol>>(widget: T) {
-    gtk_container_remove(underlying, widget.underlying)
+  
+  public mutating func add(widget: WidgetProtocol) {
+    gtk_container_add(container, widget.widget)
   }
-  public func checkResize() {
-    gtk_container_check_resize(underlying)
+  public mutating func remove(widget: WidgetProtocol) {
+    gtk_container_remove(container, widget.widget)
   }
-  public var focusChild: Widget? {
+  public mutating func checkResize() {
+    gtk_container_check_resize(container)
+  }
+  public var focusChild: WidgetProtocol? {
     get {
-      return Widget(gtk_container_get_focus_child(underlying))
-    }
-    set {
-      gtk_container_set_focus_child(underlying, newValue?.underlying)
+      return Widget(gtk_container_get_focus_child(container))
+    } set {
+      gtk_container_set_focus_child(container, newValue?.widget)
     }
   }
   public var borderWith: guint {
     get {
-      return gtk_container_get_border_width(underlying)
+      return gtk_container_get_border_width(container)
     }
     set {
-      gtk_container_set_border_width(underlying, newValue)
+      gtk_container_set_border_width(container, newValue)
     }
   }
   
   
-  var added: AddedSignal {
-    return AddedSignal(instance: underlying)
+  public var added: AddedSignal {
+    return AddedSignal(instance: container)
   }
-  var removed: RemovedSignal {
-    return RemovedSignal(instance: underlying)
+  public var removed: RemovedSignal {
+    return RemovedSignal(instance: container)
   }
-  var focusedChild: FocusedChildSignal {
-    return FocusedChildSignal(instance: underlying)
+  public var focusedChild: FocusedChildSignal {
+    return FocusedChildSignal(instance: container)
   }
-  var checkedResize: CheckedResizeSignal {
-    return CheckedResizeSignal(instance: underlying)
+  public var checkedResize: CheckedResizeSignal {
+    return CheckedResizeSignal(instance: container)
+  }
+}
+
+public struct AddedSignal: Signal {
+  typealias Instance = UnsafeMutablePointer<GtkContainer>
+  var instance: Instance!
+  private typealias Function = (Container, Widget) -> Void
+  @discardableResult public func connect(swapped: Bool = false, to function: Function) -> UInt {
+    let callback: (@convention(c)(Instance, UnsafeMutablePointer<GtkWidget>, UnsafeRawPointer) -> Void) = {
+      (Unmanaged<Data>.fromOpaque($2).takeUnretainedValue().function as! Function)(Container($0), Widget($1))
+    }
+    return connectSignal(object: instance, signal: "add", swapped: swapped, to: function, unsafeBitCast(callback, to: GCallback.self))
+  }
+}
+
+public struct RemovedSignal: Signal {
+  typealias Instance = UnsafeMutablePointer<GtkContainer>
+  var instance: Instance!
+  private typealias Function = (Container, Widget) -> Void
+  @discardableResult public func connect(swapped: Bool = false, to function: Function) -> UInt {
+    let callback: (@convention(c)(Instance, UnsafeMutablePointer<GtkWidget>, UnsafeRawPointer) -> Void) = {
+      (Unmanaged<Data>.fromOpaque($2).takeUnretainedValue().function as! Function)(Container($0), Widget($1))
+    }
+    return connectSignal(object: instance, signal: "remove", swapped: swapped, to: function, unsafeBitCast(callback, to: GCallback.self))
+  }
+}
+
+public struct FocusedChildSignal: Signal {
+  typealias Instance = UnsafeMutablePointer<GtkContainer>
+  var instance: Instance!
+  private typealias Function = (Container, Widget) -> Void
+  @discardableResult public func connect(swapped: Bool = false, to function: Function) -> UInt {
+    let callback: (@convention(c)(Instance, UnsafeMutablePointer<GtkWidget>, UnsafeRawPointer) -> Void) = {
+      (Unmanaged<Data>.fromOpaque($2).takeUnretainedValue().function as! Function)(Container($0), Widget($1))
+    }
+    return connectSignal(object: instance, signal: "set-focus-child", swapped: swapped, to: function, unsafeBitCast(callback, to: GCallback.self))
+  }
+}
+
+public struct CheckedResizeSignal: Signal {
+  typealias Instance = UnsafeMutablePointer<GtkContainer>
+  var instance: Instance!
+  private typealias Function = (Container) -> Void
+  @discardableResult public func connect(swapped: Bool = false, to function: Function) -> UInt {
+    let callback: (@convention(c)(Instance, UnsafeRawPointer) -> Void) = {
+      (Unmanaged<Data>.fromOpaque($1).takeUnretainedValue().function as! Function)(Container($0))
+    }
+    return connectSignal(object: instance, signal: "check-resize", swapped: swapped, to: function, unsafeBitCast(callback, to: GCallback.self))
   }
 }

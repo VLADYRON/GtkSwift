@@ -18,15 +18,41 @@
 
 import CGtk
 
-public protocol BuilderProtocol {
-  typealias Pointer = UnsafeMutablePointer<GtkBuilder>
-}
-public struct Builder: BuilderProtocol, Object, Buildable {
-  public var underlying: UnsafeMutablePointer<GtkBuilder>
-  
-  init(_ ptr: UnsafeMutableRawPointer) {
-    underlying = unsafeBitCast(ptr, to: Pointer.self)
+public protocol BuilderProtocol: ObjectProtocol {
+  func connectSignals()
+  subscript(object: String) -> ApplicationWindow? {
+    get
   }
+  subscript(object: String) -> Bin? {
+    get
+  }
+  subscript(object: String) -> Box? {
+    get
+  }
+  subscript(object: String) -> Button? {
+    get
+  }
+  subscript(object: String) -> ButtonBox? {
+    get
+  }
+  subscript(object: String) -> Container? {
+    get
+  }
+  subscript(object: String) -> Widget? {
+    get
+  }
+  subscript(object: String) -> Window? {
+    get
+  }
+}
+
+public struct Builder: Object, BuilderProtocol {
+  public let handle: UnsafeMutableRawPointer
+  
+  init(_ ptr: UnsafeMutablePointer<GtkBuilder>) {
+    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+  }
+  
   public init() {
     self.init(gtk_builder_new()!)
   }
@@ -41,29 +67,41 @@ public struct Builder: BuilderProtocol, Object, Buildable {
   }
 }
 
-public extension Object where Self: BuilderProtocol {
-  public subscript(widget: String) -> Button? {
-    return Button(gtk_builder_get_object(underlying, widget))
+
+extension BuilderProtocol {
+  var builder: UnsafeMutablePointer<GtkBuilder> {
+    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkBuilder>.self)
   }
-  public subscript(widget: String) -> Widget? {
-    return Widget(gtk_builder_get_object(underlying, widget))
+  
+  public func connectSignals() {
+    gtk_builder_connect_signals(builder, nil);
   }
-  public subscript(widget: String) -> Window? {
-    return Window(gtk_builder_get_object(underlying, widget))
+//  @available(*, deprecated, message: "Will be removed when generic subscripts are available!")
+//  public func get<T: Buildable>(_ widget: String) -> T? {
+//    return T(gtk_builder_get_object(builder, object))
+//  }
+  public subscript(object: String) -> Button? {
+    return Button(gtk_builder_get_object(builder, object))
   }
-  public subscript(widget: String) -> ApplicationWindow? {
-    return ApplicationWindow(gtk_builder_get_object(underlying, widget))
+  public subscript(object: String) -> Widget? {
+    return Widget(gtk_builder_get_object(builder, object))
   }
-  public subscript(widget: String) -> Bin? {
-    return Bin(gtk_builder_get_object(underlying, widget))
+  public subscript(object: String) -> Window? {
+    return Window(gtk_builder_get_object(builder, object))
   }
-  public subscript(widget: String) -> Container? {
-    return Container(gtk_builder_get_object(underlying, widget))
+  public subscript(object: String) -> ApplicationWindow? {
+    return ApplicationWindow(gtk_builder_get_object(builder, object))
   }
-  public subscript(widget: String) -> Box? {
-    return Box(gtk_builder_get_object(underlying, widget))
+  public subscript(object: String) -> Bin? {
+    return Bin(gtk_builder_get_object(builder, object))
   }
-  public subscript(widget: String) -> ButtonBox? {
-    return ButtonBox(gtk_builder_get_object(underlying, widget))
+  public subscript(object: String) -> Container? {
+    return Container(gtk_builder_get_object(builder, object))
+  }
+  public subscript(object: String) -> Box? {
+    return Box(gtk_builder_get_object(builder, object))
+  }
+  public subscript(object: String) -> ButtonBox? {
+    return ButtonBox(gtk_builder_get_object(builder, object))
   }
 }

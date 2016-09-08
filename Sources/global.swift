@@ -25,3 +25,6 @@ public func main() {
 public func quitMain() {
 	gtk_main_quit()
 }
+public func enableDebugging(toggle: Bool) {
+	gtk_window_set_interactive_debugging(toggle ? 1 : 0)
+}

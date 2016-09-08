@@ -18,19 +18,26 @@
 
 import CGtk
 
-public protocol BinProtocol: ContainerProtocol {
-  typealias Pointer = UnsafeMutablePointer<GtkBin>
+public protocol BinProtocol: ContainerProtocol, Buildable {
+  var child: Widget? { get }
 }
-public struct Bin: BinProtocol, Object, Buildable {
-  public var underlying: UnsafeMutablePointer<GtkBin>
-  
-  init(_ ptr: UnsafeMutableRawPointer) {
-    underlying = unsafeBitCast(ptr, to: Pointer.self)
+
+public struct Bin: Object, BinProtocol {
+  public let handle: UnsafeMutableRawPointer
+  init(_ ptr: UnsafeMutablePointer<GtkBin>) {
+    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
 }
 
-public extension Object where Self: BinProtocol {
+////////////////////////////////////////////////////////////////////////////////
+/// Implementation
+////////////////////////////////////////////////////////////////////////////////
+extension BinProtocol {
+  var bin: UnsafeMutablePointer<GtkBin> {
+    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkBin>.self)
+  }
+  
   public var child: Widget? {
-    return Widget(gtk_bin_get_child(underlying))
+    return Widget(gtk_bin_get_child(bin))
   }
 }

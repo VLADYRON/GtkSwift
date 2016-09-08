@@ -18,29 +18,37 @@
 
 import CGtk
 
-public protocol ApplicationWindowProtocol: WindowProtocol {
-	typealias Pointer = UnsafeMutablePointer<GtkApplicationWindow>
-}
-public struct ApplicationWindow: ApplicationWindowProtocol, Object, Buildable {
-	public var underlying: UnsafeMutablePointer<GtkApplicationWindow>
-	
-	init(_ ptr: UnsafeMutableRawPointer) {
-		underlying = unsafeBitCast(ptr, to: Pointer.self)
-	}
-	public init(application: Application) {
-		self.init(unsafeBitCast(gtk_application_window_new(application.underlying), to: Pointer.self))
-	}
+public protocol ApplicationWindowProtocol: ContainerProtocol, Buildable {
+  var showMenuBar: Bool { get set }
+  var id: guint { get }
 }
 
-public extension Object where Self: ApplicationWindowProtocol {
-	public var showMenuBar: Bool {
-		get {
-			return gtk_application_window_get_show_menubar(underlying) != 0
-		} set {
-			gtk_application_window_set_show_menubar(underlying, newValue ? 1 : 0)
-		}
-	}
-	public var id: guint {
-		return gtk_application_window_get_id(underlying)
-	}
+public struct ApplicationWindow: Object, ApplicationWindowProtocol {
+  public let handle: UnsafeMutableRawPointer
+  init(_ ptr: UnsafeMutablePointer<GtkApplicationWindow>) {
+    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+  }
+  public init(application: Application) {
+    self.init(gtk_application_window_new(application.application))
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Implementation
+////////////////////////////////////////////////////////////////////////////////
+extension ApplicationWindowProtocol {
+  var applicationWindow: UnsafeMutablePointer<GtkApplicationWindow> {
+    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkApplicationWindow>.self)
+  }
+  
+  public var showMenuBar: Bool {
+    get {
+      return gtk_application_window_get_show_menubar(applicationWindow) != 0
+    } set {
+      gtk_application_window_set_show_menubar(applicationWindow, newValue ? 1 : 0)
+    }
+  }
+  public var id: guint {
+    return gtk_application_window_get_id(applicationWindow)
+  }
 }

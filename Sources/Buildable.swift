@@ -18,18 +18,17 @@
 
 import CGtk
 
-import CGtk
-
-public protocol Buildable {
-  typealias Pointer = OpaquePointer
+public protocol Buildable: ObjectProtocol {
+  var name: String { get set }
+//  init(_ ptr: UnsafeMutableRawPointer)
 }
 
-public extension Object where Self: Buildable {
+public extension Buildable {
   public var name: String {
     get {
-      return String(cString: gtk_buildable_get_name(underlying))
+      return String(cString: gtk_buildable_get_name(opaque))
     } set {
-      gtk_buildable_set_name(underlying, newValue)
+      gtk_buildable_set_name(opaque, newValue)
     }
   }
 }

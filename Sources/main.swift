@@ -20,40 +20,39 @@
 import CGtk
 
 
-let app = Application(id: "projects.GtkSwift")
-app.activated.connect {
-	application in
-	var window = ApplicationWindow(application: application)
-	window.title = "Window"
-	window.defaultSize = (width: 200, height: 200)
-	window.debuggingEnabled.connect {
-		_, toggle in
-		Window.enableDebugging(toggle: toggle)
-	}
-	
-	let buttonBox = ButtonBox()
-	window.add(widget: buttonBox)
-	
-	var id: UInt = 0
-	let button = Button(label: "Hello World!")
-	id = button.clicked.connect {
-		_ in
-		print(application.isRemote)
-		print(application.resourceBasePath)
-	}
-	buttonBox.add(widget: button)
-	
-	
-	window.showAll()
+//let app = Application(id: "projects.GtkSwift")
+//app.activated.connect {
+//	application in
+//	var window = ApplicationWindow(application: application)
+//	window.title = "Window"
+//	window.defaultSize = (width: 200, height: 200)
+//	window.debuggingEnabled.connect {
+//		_, toggle in
+//		Window.enableDebugging(toggle: toggle)
+//	}
+//
+//	var buttonBox = ButtonBox()
+//	window.add(widget: buttonBox)
+//
+//	var id: UInt = 0
+//	let button = Button(label: "Hello World!")
+//	id = button.clicked.connect {
+//		_ in
+//		print(application.isRemote)
+//		print(application.resourceBasePath)
+//	}
+//	buttonBox.add(widget: button)
+//	buttonBox.focusChild = button
+//
+//
+//	window.showAll()
 ////	gtk_button_clicked(button.button)
 ////	window.destroy()
-}
-app.run()
+//}
+//app.run()
 //
 
-//gtk_init(nil, nil)
 //
-//let builder = Builder(fromFile: "ui/builder.ui")
 //let window = builder.get(widget: "window")! as Window
 //let window = builder["window"]! as Window
 //let button = builder["button1"]! as Button
@@ -74,5 +73,38 @@ app.run()
 //  Window.enableDebugging(toggle: toggle)
 //}
 //print(window.name)
-//gtk_builder_connect_signals(builder.underlying, nil);
-//main()
+
+
+
+
+
+
+//public struct Container: ObjectHandle, ContainerProtocol {
+//  public typealias Handle = UnsafeMutablePointer<GtkContainer>
+//  public let handle: Handle
+//  public init(_ handle: Handle) { self.handle = handle }
+//
+//  public init(label: String) {
+//    self.init(unsafeBitCast(gtk_button_new_with_label(label), to: UnsafeMutablePointer<GtkButton>.self))
+//  }
+//}
+
+gtk_init(nil, nil)
+let builder = Builder(fromFile: "ui/builder.ui")
+let window = builder["window"]! as Window
+let button = builder["quit"]! as Button
+var id: UInt = 0
+id = button.clicked.connect {
+  button in
+  print(button)
+  let clickedSignal = button.clicked
+  clickedSignal.disconnect(from: id)
+  clickedSignal.connect {
+    _ in quitMain()
+  }
+}
+//window.focusChild = window.child
+//window.activateFocus()
+//builder.connectSignals()
+main()
+

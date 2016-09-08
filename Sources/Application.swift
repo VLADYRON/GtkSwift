@@ -18,108 +18,159 @@
 
 import CGtk
 
-public protocol GApplicationProtocol {
-  typealias Pointer = UnsafeMutablePointer<GApplication>
-}
-public protocol ApplicationProtocol: GApplicationProtocol {
-  typealias Pointer = UnsafeMutablePointer<GtkApplication>
-}
-public struct Application: ApplicationProtocol, Object {
-  public var underlying: UnsafeMutablePointer<GtkApplication>
+public protocol ApplicationProtocol: ObjectProtocol {
+  // Functions
+  mutating func add(window: Window)
+  mutating func remove(window: Window)
+  mutating func run()
+  mutating func hold()
+  mutating func release()
+  mutating func quit()
+  func getWindow(id: UInt32) -> Window?
   
-  init(_ ptr: UnsafeMutableRawPointer) {
-    underlying = unsafeBitCast(ptr, to: Pointer.self)
+  // properties
+  var prefersAppMenu: Bool { get }
+  var activeWindow: Window { get }
+  var windows: [Window] { get }
+  var applicationId: String { get set }
+  var inactivityTimeout: UInt32 { get set }
+  var resourceBasePath: String { get set }
+  var isRegistered: Bool { get }
+  var isRemote: Bool { get }
+  
+  // signals
+  var activated: ActivatedSignal { get }
+  var windowAdded: WindowAddedSignal { get }
+  var windowRemoved: WindowRemovedSignal { get }
+}
+
+public struct Application: Object, ApplicationProtocol {
+  public let handle: UnsafeMutableRawPointer
+  init(_ ptr: UnsafeMutablePointer<GtkApplication>) {
+    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
+  
   public init(id: String, flags: ApplicationFlags = .None) {
-    self.init(unsafeBitCast(gtk_application_new(id, flags.value), to: Pointer.self))
+    self.init(gtk_application_new(id, flags.value))
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Functions
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-public extension Object where Self: ApplicationProtocol {
-  public func add(window: Window) {
-    gtk_application_add_window(underlying, window.underlying)
+////////////////////////////////////////////////////////////////////////////////
+/// Implementation
+////////////////////////////////////////////////////////////////////////////////
+public extension ApplicationProtocol {
+  var application: UnsafeMutablePointer<GtkApplication> {
+    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkApplication>.self)
   }
-  public func remove(window: Window) {
-    gtk_application_remove_window(underlying, window.underlying)
+  var gApplication: UnsafeMutablePointer<GApplication> {
+    return unsafeBitCast(handle, to: UnsafeMutablePointer<GApplication>.self)
   }
-  public var windows: [Window] {
-    return Array<Window>(from: gtk_application_get_windows(underlying))
+  
+  mutating func add(window: Window) {
+    gtk_application_add_window(application, window.window)
   }
-  public func getWindow(id: UInt32) -> Window? {
-    return Window(gtk_application_get_window_by_id(underlying, id))
+  mutating func remove(window: Window) {
+    gtk_application_remove_window(application, window.window)
   }
-}
-public extension Object where Self: GApplicationProtocol {
-  public func run() {
-    g_application_run(underlying, CommandLine.argc, CommandLine.unsafeArgv)
-    g_object_unref(underlying)
+  var windows: [Window] {
+    return Array<Window>(from: gtk_application_get_windows(application))
   }
-  public func hold() {
-    g_application_hold(underlying)
+  func getWindow(id: UInt32) -> Window? {
+    return Window(gtk_application_get_window_by_id(application, id))
   }
-  public func release() {
-    g_application_release(underlying)
-  }
-  public func quit() {
-    g_application_quit(underlying)
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Properties
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-public extension Object where Self: ApplicationProtocol {
-  public var prefersAppMenu: Bool {
-    return gtk_application_prefers_app_menu(underlying) != 0
+  var prefersAppMenu: Bool {
+    return gtk_application_prefers_app_menu(application) != 0
   }
   var activeWindow: Window {
-    return Window(gtk_application_get_active_window(underlying))
+    return Window(gtk_application_get_active_window(application))
   }
-}
-public extension Object where Self: GApplicationProtocol {
+  var activated: ActivatedSignal {
+    return ActivatedSignal(instance: application)
+  }
+  var windowAdded: WindowAddedSignal {
+    return WindowAddedSignal(instance: application)
+  }
+  var windowRemoved: WindowRemovedSignal {
+    return WindowRemovedSignal(instance: application)
+  }
+  
+  func run() {
+    g_application_run(gApplication, CommandLine.argc, CommandLine.unsafeArgv)
+    g_object_unref(gApplication)
+  }
+  func hold() {
+    g_application_hold(gApplication)
+  }
+  func release() {
+    g_application_release(gApplication)
+  }
+  func quit() {
+    g_application_quit(gApplication)
+  }
   var applicationId: String {
     get {
-      return String(cString: g_application_get_application_id(underlying))
+      return String(cString: g_application_get_application_id(gApplication))
     } set {
-      g_application_set_application_id(underlying, newValue)
+      g_application_set_application_id(gApplication, newValue)
     }
   }
   var inactivityTimeout: UInt32 {
     get {
-      return g_application_get_inactivity_timeout(underlying)
+      return g_application_get_inactivity_timeout(gApplication)
     } set {
-      g_application_set_inactivity_timeout(underlying, newValue)
+      g_application_set_inactivity_timeout(gApplication, newValue)
     }
   }
   var resourceBasePath: String {
     get {
-      return String(cString: g_application_get_resource_base_path(underlying))
+      return String(cString: g_application_get_resource_base_path(gApplication))
     } set {
-      g_application_set_resource_base_path(underlying, newValue)
+      g_application_set_resource_base_path(gApplication, newValue)
     }
   }
   var isRegistered: Bool {
-    return g_application_get_is_registered(underlying) != 0
+    return g_application_get_is_registered(gApplication) != 0
   }
   var isRemote: Bool {
-    return g_application_get_is_remote(underlying) != 0
+    return g_application_get_is_remote(gApplication) != 0
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Signals
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-public extension Object where Self: ApplicationProtocol {
-  var activated: ActivatedSignal {
-    return ActivatedSignal(instance: underlying)
+////////////////////////////////////////////////////////////////////////////////
+/// Signal classes
+////////////////////////////////////////////////////////////////////////////////
+public struct ActivatedSignal: Signal {
+  typealias Instance = UnsafeMutablePointer<GtkApplication>
+  var instance: Instance!
+  private typealias Function = (Application) -> Void
+  @discardableResult public func connect(swapped: Bool = false, to function: Function) -> UInt {
+    let callback: (@convention(c)(Instance, UnsafeRawPointer) -> Void) = {
+      (Unmanaged<Data>.fromOpaque($1).takeUnretainedValue().function as! Function)(Application($0))
+    }
+    return connectSignal(object: instance, signal: "activate", swapped: swapped, to: function, unsafeBitCast(callback, to: GCallback.self))
   }
-  var windowAdded: WindowAddedSignal {
-    return WindowAddedSignal(instance: underlying)
+}
+
+public struct WindowAddedSignal: Signal {
+  typealias Instance = UnsafeMutablePointer<GtkApplication>
+  var instance: Instance!
+  private typealias Function = (Application, Window) -> Void
+  @discardableResult public func connect(swapped: Bool = false, to function: Function) -> UInt {
+    let callback: (@convention(c)(Instance, UnsafeMutablePointer<GtkWindow>, UnsafeRawPointer) -> Void) = {
+      (Unmanaged<Data>.fromOpaque($2).takeUnretainedValue().function as! Function)(Application($0), Window($1))
+    }
+    return connectSignal(object: instance, signal: "window-added", swapped: swapped, to: function, unsafeBitCast(callback, to: GCallback.self))
   }
-  var windowRemoved: WindowRemovedSignal {
-    return WindowRemovedSignal(instance: underlying)
+}
+
+public struct WindowRemovedSignal: Signal {
+  typealias Instance = UnsafeMutablePointer<GtkApplication>
+  var instance: Instance!
+  private typealias Function = (Application, Window) -> Void
+  @discardableResult public func connect(swapped: Bool = false, to function: Function) -> UInt {
+    let callback: (@convention(c)(Instance, UnsafeMutablePointer<GtkWindow>, UnsafeRawPointer) -> Void) = {
+      (Unmanaged<Data>.fromOpaque($2).takeUnretainedValue().function as! Function)(Application($0), Window($1))
+    }
+    return connectSignal(object: instance, signal: "window-removed", swapped: swapped, to: function, unsafeBitCast(callback, to: GCallback.self))
   }
 }

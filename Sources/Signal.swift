@@ -18,14 +18,14 @@
 
 import CGtk
 
-internal class Data {
+class Data {
   let function: Any
   init(_ function: Any) {
     self.function = function
   }
 }
 
-internal func connectSignal(object: UnsafeMutableRawPointer, signal: String, swapped: Bool = false, to function: Any, _ callback: @escaping GCallback) -> UInt {
+func connectSignal(object: UnsafeMutableRawPointer, signal: String, swapped: Bool = false, to function: Any, _ callback: @escaping GCallback) -> UInt {
   let data = Unmanaged.passRetained(Data(function)).toOpaque()
   let destructor: @convention(c) (UnsafeRawPointer) -> Void = {
     data in
@@ -48,6 +48,6 @@ extension Signal {
   }
   
   public func disconnect(from id: UInt) {
-    g_signal_handler_disconnect(instance as! gpointer!, id)
+    g_signal_handler_disconnect(unsafeBitCast(instance, to: gpointer.self), id)
   }
 }
