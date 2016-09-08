@@ -1,5 +1,5 @@
 ///*
-// * CGtk Copyright (C) 2016 Tim Diekmann
+// * GtkSwift Copyright (C) 2016 Tim Diekmann
 // * mailto: t.diekmann.3dv@gmail.com
 // *
 // * This program is free software: you can redistribute it and/or modify
