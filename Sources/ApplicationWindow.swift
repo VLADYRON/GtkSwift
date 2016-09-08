@@ -18,7 +18,7 @@
 
 import CGtk
 
-public protocol ApplicationWindowProtocol: ContainerProtocol, Buildable {
+public protocol ApplicationWindowProtocol: WindowProtocol, Buildable {
   var showMenuBar: Bool { get set }
   var id: guint { get }
 }
