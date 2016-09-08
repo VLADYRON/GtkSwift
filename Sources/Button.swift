@@ -19,6 +19,16 @@
 import CGtk
 
 public protocol ButtonProtocol: ContainerProtocol, Buildable {
+  // Functions
+  func signalClicked()
+  
+  // Properties
+  var reliefStyle: ReliefStyle { get set }
+  var label: String { get set }
+  var useUnderline: Bool { get set }
+  var image: WidgetProtocol? { get set }
+  
+  // Signals
   var clicked: ClickedSignal { get }
 }
 
@@ -27,8 +37,17 @@ public struct Button: Object, ButtonProtocol {
   init(_ ptr: UnsafeMutablePointer<GtkButton>) {
     underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
-  public init(label: String) {
-    self.init(gtk_button_new_with_label(label))
+  public init() {
+    self.init(gtk_button_new())
+  }
+  public init(label: String, mnemonic: Bool = false) {
+    switch mnemonic {
+    case true: self.init(gtk_button_new_with_mnemonic(label))
+    case false: self.init(gtk_button_new_with_label(label))
+    }
+  }
+  public init(icon: String, size: IconSize = .Button) {
+    self.init(gtk_button_new_from_icon_name(icon, size.value))
   }
 }
 
@@ -39,7 +58,37 @@ extension ButtonProtocol {
   var button: UnsafeMutablePointer<GtkButton> {
     return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkButton>.self)
   }
-  
+  public var reliefStyle: ReliefStyle {
+    get {
+      return ReliefStyle.make(value: gtk_button_get_relief(button))
+    } set {
+      gtk_button_set_relief(button, newValue.value)
+    }
+  }
+  public var label: String {
+    get {
+      return String(cString: gtk_button_get_label(button))
+    } set {
+      gtk_button_set_label(button, newValue.isEmpty ? nil : newValue)
+    }
+  }
+  public var useUnderline: Bool {
+    get {
+      return gtk_button_get_use_underline(button) != 0
+    } set {
+      gtk_button_set_use_underline(button, newValue ? 1 : 0)
+    }
+  }
+  public var image: WidgetProtocol? {
+    get {
+      return Widget(gtk_button_get_image(button))
+    } set {
+      gtk_button_set_image(button, newValue == nil ? nil : newValue!.widget)
+    }
+  }
+  public func signalClicked() {
+    gtk_button_clicked(button)
+  }
   public var clicked: ClickedSignal {
     return ClickedSignal(instance: button)
   }

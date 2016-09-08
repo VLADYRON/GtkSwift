@@ -19,37 +19,50 @@
 
 import CGtk
 
+var bool = false
+var w: WidgetProtocol? = nil
+let app = Application(id: "projects.GtkSwift")
+app.activated.connect {
+  application in
+  var window = ApplicationWindow(application: application)
+  window.title = "Window"
+  window.defaultSize = (width: 200, height: 200)
+  window.debuggingEnabled.connect {
+    _, toggle in
+    enableDebugging(toggle: toggle)
+  }
+  
+  var buttonBox = ButtonBox()
+  window.add(widget: buttonBox)
+  
+  var id: UInt = 0
+  var button = Button(icon: "Quit")
+  
+  w = button.image
+  id = button.clicked.connect {
+    button in
+    var button: Button = button
+    switch bool {
+    case true:
+      bool = false
+      button.image = nil
+    case false: bool = true
+      button.useUnderline = true
+      button.image = Button()
+    }
+    print(bool)
+  }
+  buttonBox.add(widget: button)
+  buttonBox.focusChild = button
+  
+  
+  window.showAll()
 
-//let app = Application(id: "projects.GtkSwift")
-//app.activated.connect {
-//	application in
-//	var window = ApplicationWindow(application: application)
-//	window.title = "Window"
-//	window.defaultSize = (width: 200, height: 200)
-//	window.debuggingEnabled.connect {
-//		_, toggle in
-//		Window.enableDebugging(toggle: toggle)
-//	}
-//
-//	var buttonBox = ButtonBox()
-//	window.add(widget: buttonBox)
-//
-//	var id: UInt = 0
-//	let button = Button(label: "Hello World!")
-//	id = button.clicked.connect {
-//		_ in
-//		print(application.isRemote)
-//		print(application.resourceBasePath)
-//	}
-//	buttonBox.add(widget: button)
-//	buttonBox.focusChild = button
-//
-//
-//	window.showAll()
-////	gtk_button_clicked(button.button)
-////	window.destroy()
-//}
-//app.run()
+//  button.clicked()
+//	gtk_button_clicked(button.button)
+//	window.destroy()
+}
+app.run()
 //
 
 //
@@ -89,22 +102,22 @@ import CGtk
 //  }
 //}
 
-gtk_init(nil, nil)
-let builder = Builder(fromFile: "ui/builder.ui")
-let window = builder["window"]! as Window
-let button = builder["quit"]! as Button
-var id: UInt = 0
-id = button.clicked.connect {
-  button in
-  print(button)
-  let clickedSignal = button.clicked
-  clickedSignal.disconnect(from: id)
-  clickedSignal.connect {
-    _ in quitMain()
-  }
-}
+//gtk_init(nil, nil)
+//let builder = Builder(fromFile: "ui/builder.ui")
+//let window = builder["window"]! as Window
+//let button = builder["quit"]! as Button
+//var id: UInt = 0
+//id = button.clicked.connect {
+//  button in
+//  print(button)
+//  let clickedSignal = button.clicked
+//  clickedSignal.disconnect(from: id)
+//  clickedSignal.connect {
+//    _ in quitMain()
+//  }
+//}
 //window.focusChild = window.child
 //window.activateFocus()
 //builder.connectSignals()
-main()
+//main()
 
