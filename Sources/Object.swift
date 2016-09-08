@@ -18,26 +18,24 @@
 
 import CGtk
 
-protocol Object {
-  associatedtype GtkPointer
-  init(_ ptr: GtkPointer)
-}
-
-extension Object {
-  init(_ ptr: UnsafeMutablePointer<GObject>) {
-    self.init(unsafeBitCast(ptr, to: GtkPointer.self))
+class Object {
+  var gtkPointer: UnsafeMutablePointer<GObject>
+  required init(ptr: UnsafeMutablePointer<GObject>) {
+    gtkPointer = ptr
   }
-  init(_ ptr: UnsafeMutableRawPointer) {
-    self.init(unsafeBitCast(ptr, to: GtkPointer.self))
+  convenience init?(ptr: UnsafeMutablePointer<GObject>?) {
+    guard let ptr = ptr else {
+      return nil
+    }
+    self.init(ptr: ptr)
   }
-}
-
-public protocol ObjectProtocol {
-  var underlyingPointer: UnsafeMutableRawPointer { get }
-}
-
-extension ObjectProtocol {
-  var opaque: OpaquePointer {
-    return unsafeBitCast(underlyingPointer, to: OpaquePointer.self)
+  convenience init(ptr: UnsafeMutableRawPointer) {
+    self.init(ptr: unsafeBitCast(ptr, to: UnsafeMutablePointer<GObject>.self))
+  }
+  convenience init?(ptr: UnsafeMutableRawPointer?) {
+    guard let ptr = ptr else {
+      return nil
+    }
+    self.init(ptr: ptr)
   }
 }
