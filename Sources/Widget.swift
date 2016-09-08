@@ -25,9 +25,9 @@ public protocol WidgetProtocol: ObjectProtocol, Buildable {
 }
 
 public struct Widget: Object, WidgetProtocol {
-  public let handle: UnsafeMutableRawPointer
+  public let underlyingPointer: UnsafeMutableRawPointer
   init(_ ptr: UnsafeMutablePointer<GtkWidget>) {
-    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+    underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
 }
 
@@ -36,7 +36,7 @@ public struct Widget: Object, WidgetProtocol {
 ////////////////////////////////////////////////////////////////////////////////
 extension WidgetProtocol {
   var widget: UnsafeMutablePointer<GtkWidget> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkWidget>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkWidget>.self)
   }
   
   public func showAll() {

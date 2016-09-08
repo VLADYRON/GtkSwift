@@ -53,9 +53,9 @@ public protocol WindowProtocol: BinProtocol, Buildable {
 }
 
 public struct Window: Object, WindowProtocol {
-  public let handle: UnsafeMutableRawPointer
+  public let underlyingPointer: UnsafeMutableRawPointer
   init(_ ptr: UnsafeMutablePointer<GtkWindow>) {
-    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+    underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
   
   public init(type: WindowType = .TopLevel) {
@@ -69,7 +69,7 @@ public struct Window: Object, WindowProtocol {
 ////////////////////////////////////////////////////////////////////////////////
 extension WindowProtocol {
   public var window: UnsafeMutablePointer<GtkWindow> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkWindow>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkWindow>.self)
   }
   
   @discardableResult public mutating func activateFocus() -> Bool {

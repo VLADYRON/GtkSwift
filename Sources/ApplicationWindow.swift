@@ -24,9 +24,9 @@ public protocol ApplicationWindowProtocol: ContainerProtocol, Buildable {
 }
 
 public struct ApplicationWindow: Object, ApplicationWindowProtocol {
-  public let handle: UnsafeMutableRawPointer
+  public let underlyingPointer: UnsafeMutableRawPointer
   init(_ ptr: UnsafeMutablePointer<GtkApplicationWindow>) {
-    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+    underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
   public init(application: Application) {
     self.init(gtk_application_window_new(application.application))
@@ -38,7 +38,7 @@ public struct ApplicationWindow: Object, ApplicationWindowProtocol {
 ////////////////////////////////////////////////////////////////////////////////
 extension ApplicationWindowProtocol {
   var applicationWindow: UnsafeMutablePointer<GtkApplicationWindow> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkApplicationWindow>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkApplicationWindow>.self)
   }
   
   public var showMenuBar: Bool {

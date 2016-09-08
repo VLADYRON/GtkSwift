@@ -31,16 +31,16 @@ public protocol ContainerProtocol: WidgetProtocol {
   var checkedResize: CheckedResizeSignal { get }
 }
 public struct Container: Object, ContainerProtocol, Buildable {
-  public let handle: UnsafeMutableRawPointer
+  public let underlyingPointer: UnsafeMutableRawPointer
   
   init(_ ptr: UnsafeMutablePointer<GtkContainer>) {
-    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+    underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
 }
 
 extension ContainerProtocol {
   var container: UnsafeMutablePointer<GtkContainer> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkContainer>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkContainer>.self)
   }
   
   public mutating func add(widget: WidgetProtocol) {

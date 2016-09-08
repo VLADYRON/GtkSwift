@@ -23,9 +23,9 @@ public protocol ButtonProtocol: ContainerProtocol, Buildable {
 }
 
 public struct Button: Object, ButtonProtocol {
-  public let handle: UnsafeMutableRawPointer
+  public let underlyingPointer: UnsafeMutableRawPointer
   init(_ ptr: UnsafeMutablePointer<GtkButton>) {
-    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+    underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
   public init(label: String) {
     self.init(gtk_button_new_with_label(label))
@@ -37,7 +37,7 @@ public struct Button: Object, ButtonProtocol {
 ////////////////////////////////////////////////////////////////////////////////
 extension ButtonProtocol {
   var button: UnsafeMutablePointer<GtkButton> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkButton>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkButton>.self)
   }
   
   public var clicked: ClickedSignal {

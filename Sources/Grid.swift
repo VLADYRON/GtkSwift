@@ -23,9 +23,9 @@ public protocol GridProtocol: ContainerProtocol, Buildable {
 }
 
 public struct Grid: Object, GridProtocol {
-  public let handle: UnsafeMutableRawPointer
+  public let underlyingPointer: UnsafeMutableRawPointer
   init(_ ptr: UnsafeMutablePointer<GtkGrid>) {
-    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+    underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
   public init() {
     self.init(gtk_grid_new())
@@ -37,7 +37,7 @@ public struct Grid: Object, GridProtocol {
 ////////////////////////////////////////////////////////////////////////////////
 extension GridProtocol {
   var grid: UnsafeMutablePointer<GtkGrid> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkGrid>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkGrid>.self)
   }
   
   public mutating func attach(widget: Widget, left: gint, top: gint, width: gint = 1, height: gint = 1) {

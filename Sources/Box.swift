@@ -22,9 +22,9 @@ public protocol BoxProtocol: ContainerProtocol, Buildable {
 }
 
 public struct Box: Object, BoxProtocol {
-  public let handle: UnsafeMutableRawPointer
+  public let underlyingPointer: UnsafeMutableRawPointer
   init(_ ptr: UnsafeMutablePointer<GtkBox>) {
-    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+    underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
 }
 
@@ -33,6 +33,6 @@ public struct Box: Object, BoxProtocol {
 ////////////////////////////////////////////////////////////////////////////////
 extension BoxProtocol {
   var box: UnsafeMutablePointer<GtkBox> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkBox>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkBox>.self)
   }
 }

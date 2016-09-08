@@ -45,9 +45,9 @@ public protocol ApplicationProtocol: ObjectProtocol {
 }
 
 public struct Application: Object, ApplicationProtocol {
-  public let handle: UnsafeMutableRawPointer
+  public let underlyingPointer: UnsafeMutableRawPointer
   init(_ ptr: UnsafeMutablePointer<GtkApplication>) {
-    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+    underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
   
   public init(id: String, flags: ApplicationFlags = .None) {
@@ -60,10 +60,10 @@ public struct Application: Object, ApplicationProtocol {
 ////////////////////////////////////////////////////////////////////////////////
 public extension ApplicationProtocol {
   var application: UnsafeMutablePointer<GtkApplication> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkApplication>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkApplication>.self)
   }
   var gApplication: UnsafeMutablePointer<GApplication> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GApplication>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GApplication>.self)
   }
   
   mutating func add(window: Window) {

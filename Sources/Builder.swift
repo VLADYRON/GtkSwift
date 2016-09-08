@@ -47,10 +47,10 @@ public protocol BuilderProtocol: ObjectProtocol {
 }
 
 public struct Builder: Object, BuilderProtocol {
-  public let handle: UnsafeMutableRawPointer
+  public let underlyingPointer: UnsafeMutableRawPointer
   
   init(_ ptr: UnsafeMutablePointer<GtkBuilder>) {
-    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+    underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
   
   public init() {
@@ -70,7 +70,7 @@ public struct Builder: Object, BuilderProtocol {
 
 extension BuilderProtocol {
   var builder: UnsafeMutablePointer<GtkBuilder> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkBuilder>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkBuilder>.self)
   }
   
   public func connectSignals() {

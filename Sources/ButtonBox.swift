@@ -22,9 +22,9 @@ public protocol ButtonBoxProtocol: ContainerProtocol, Buildable {
 }
 
 public struct ButtonBox: Object, ButtonBoxProtocol {
-  public let handle: UnsafeMutableRawPointer
+  public let underlyingPointer: UnsafeMutableRawPointer
   init(_ ptr: UnsafeMutablePointer<GtkButtonBox>) {
-    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+    underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
   public init(orientation: Orientation = .Horizontal) {
     self.init(gtk_button_box_new(orientation.value))
@@ -36,6 +36,6 @@ public struct ButtonBox: Object, ButtonBoxProtocol {
 ////////////////////////////////////////////////////////////////////////////////
 extension ButtonBoxProtocol {
   var buttonBox: UnsafeMutablePointer<GtkButtonBox> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkButtonBox>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkButtonBox>.self)
   }
 }

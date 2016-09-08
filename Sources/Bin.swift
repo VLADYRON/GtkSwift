@@ -23,9 +23,9 @@ public protocol BinProtocol: ContainerProtocol, Buildable {
 }
 
 public struct Bin: Object, BinProtocol {
-  public let handle: UnsafeMutableRawPointer
+  public let underlyingPointer: UnsafeMutableRawPointer
   init(_ ptr: UnsafeMutablePointer<GtkBin>) {
-    handle = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
+    underlyingPointer = unsafeBitCast(ptr, to: UnsafeMutableRawPointer.self)
   }
 }
 
@@ -34,7 +34,7 @@ public struct Bin: Object, BinProtocol {
 ////////////////////////////////////////////////////////////////////////////////
 extension BinProtocol {
   var bin: UnsafeMutablePointer<GtkBin> {
-    return unsafeBitCast(handle, to: UnsafeMutablePointer<GtkBin>.self)
+    return unsafeBitCast(underlyingPointer, to: UnsafeMutablePointer<GtkBin>.self)
   }
   
   public var child: Widget? {

@@ -33,11 +33,11 @@ extension Object {
 }
 
 public protocol ObjectProtocol {
-  var handle: UnsafeMutableRawPointer { get }
+  var underlyingPointer: UnsafeMutableRawPointer { get }
 }
 
 extension ObjectProtocol {
   var opaque: OpaquePointer {
-    return unsafeBitCast(handle, to: OpaquePointer.self)
+    return unsafeBitCast(underlyingPointer, to: OpaquePointer.self)
   }
 }
