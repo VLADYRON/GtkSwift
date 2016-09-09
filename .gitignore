@@ -5,3 +5,4 @@ CMakeCache.txt
 /CMakeFiles
 /Packages
 /*.xcodeproj
+ui/#*#
