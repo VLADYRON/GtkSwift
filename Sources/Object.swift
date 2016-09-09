@@ -20,7 +20,6 @@ import CGtk
 public class Object {
   var object: UnsafeMutablePointer<GObject>
   init(from ptr: UnsafeMutablePointer<GObject>) {
-    assert(g_object_get_data(object, "swift-instance") == nil, "This function should not be called directly. Use Object.make instead!")
     object = ptr
     let data = Unmanaged.passRetained(self).toOpaque()
     let destructor: @convention(c) (UnsafeMutableRawPointer) -> Void = { Unmanaged<AnyObject>.fromOpaque($0).release() }
