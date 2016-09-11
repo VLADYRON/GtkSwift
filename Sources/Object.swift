@@ -1,57 +1,81 @@
-/// 
+///
 /// This file is part of GtkSwift. Copyright (C) 2016  Tim Diekmann
-/// 
+///
 /// GtkSwift is free software: you can redistribute it and/or modify
-/// it under the terms of the GNU Lesser General Public License as published 
+/// it under the terms of the GNU Lesser General Public License as published
 /// by the Free Software Foundation, either version 3 of the License, or
 /// (at your option) any later version.
-/// 
+///
 /// GtkSwift is distributed in the hope that it will be useful,
 /// but WITHOUT ANY WARRANTY; without even the implied warranty of
 /// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 /// GNU Lesser General Public License for more details.
-/// 
+///
 /// You should have received a copy of the GNU Lesser General Public License
 /// along with GtkSwift. If not, see <http://www.gnu.org/licenses/>.
-/// 
+///
 
 import CGtk
 
-public class Object {
-  var object: UnsafeMutablePointer<GObject>
-  init(from ptr: UnsafeMutablePointer<GObject>) {
-    object = ptr
-    let data = Unmanaged.passRetained(self).toOpaque()
-    let destructor: @convention(c) (UnsafeMutableRawPointer) -> Void = { Unmanaged<AnyObject>.fromOpaque($0).release() }
-    g_object_set_data_full(object, "swift-instance", data, unsafeBitCast(destructor, to: GDestroyNotify.self))
+public class Object: Handle {
+  public var gPointer: UnsafeMutablePointer<CGtk.GObject>
+  public required init(from pointer: UnsafeMutablePointer<CGtk.GObject>) {
+    gPointer = pointer
   }
+}
 
-  class func make(_ object: UnsafeMutablePointer<GObject>) -> Object {
-    if let instance = g_object_get_data(object, "swift-instance") {
-      return Unmanaged.fromOpaque(instance).takeUnretainedValue()
-    } else {
-      return Object(from: object)
+public struct PropertyIterator : IteratorProtocol {
+  public typealias Element = (name: String, value: Any)
+
+  public mutating func next() -> Element? {
+    let paramSpecs = object.gParamSpecs
+    guard position < paramSpecs.count else { return nil }
+    let paramSpec = paramSpecs[position]
+    position += 1
+    guard paramSpec.pointee.flags.rawValue & G_PARAM_READABLE.rawValue == G_PARAM_READABLE.rawValue else {
+      return next()
     }
+    let valueType = paramSpec.pointee.value_type
+    let paramName = String(cString: paramSpec.pointee.name)
+
+    var returnValue: Any = String(cString: g_type_name(valueType))
+
+    let value = UnsafeMutablePointer<GValue>.allocate(capacity: 1)
+    defer { value.deallocate(capacity: 1) }
+    value.initialize(to: GValue())
+    defer { value.deinitialize()}
+    g_value_init(value, valueType)
+    defer { g_value_unset(value) }
+    g_object_get_property(object.gPointer, paramName, value)
+    switch valueType {
+      case g_type_boolean(): returnValue = g_value_get_boolean(value) != 0
+      case g_type_int(): returnValue = g_value_get_int(value)
+      case g_type_uint(): returnValue = g_value_get_uint(value)
+      case g_type_boxed(): returnValue = g_type_name(paramSpec.pointee.owner_type)
+      case g_type_string():
+        guard let string = g_value_get_string(value) else { returnValue = "nil"; break }
+        returnValue = String(cString: string)
+      default: break
+    }
+//    g_object_get_property(handle, property, value)
+//    return T(from: value)
+
+
+    return (name: paramName, value: returnValue)
   }
 
-  func get<T:Property>(property: String) -> T? {
-    let value = UnsafeMutablePointer<GValue>.allocate(capacity: 1)
-    defer { value.deallocate(capacity: 1) }
-    value.initialize(to: GValue())
-    defer { value.deinitialize() }
-    g_value_init(value, T.propertyType)
-    defer { g_value_unset(value) }
-    g_object_get_property(object, property, value)
-    return T(from: value)
+  private var object: Object
+  private var position: Int = 0
+
+  init(object: Object) {
+    self.object = object
   }
-  func set<T:Property>(property: String, to newValue: T)  {
-    let value = UnsafeMutablePointer<GValue>.allocate(capacity: 1)
-    defer { value.deallocate(capacity: 1) }
-    value.initialize(to: GValue())
-    defer { value.deinitialize() }
-    g_value_init(value, T.propertyType)
-    defer { g_value_unset(value) }
-    newValue.write(into: value)
-    g_object_set_property(object, property, value)
+
+}
+
+extension Object: Class, Sequence {
+  public typealias Iterator = PropertyIterator
+  public func makeIterator() -> Iterator {
+    return Iterator(object: self)
   }
 }
