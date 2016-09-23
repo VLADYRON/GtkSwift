@@ -21,6 +21,6 @@ import PackageDescription
 let package = Package(
     name: "GtkSwift",
     dependencies: [
-		.Package(url: "https://github.com/SWIFTingAround/CGtk.git", majorVersion: 0, minor: 1)
+		.Package(url: "https://github.com/SWIFTingAround/CGtk.git", majorVersion: 0)
     ]
 )
